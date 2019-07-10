@@ -1,3 +1,3 @@
 FROM alpine:latest
 
-RUN pkg add curl
+RUN apk add vim
