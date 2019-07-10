@@ -1,0 +1,20 @@
+#!/bin/sh
+# This should be invoked from root directory of the toolkit
+# Run twice to get paths to compiled shared objects
+
+# List of library parts to compile in this order
+lbs="transportModels\
+    relativePermeabilityModels\
+    capillaryPressureModels\
+    wellModels"
+root=$PWD
+
+# Compile porous models libraries 
+for lib in $lbs; do
+    cd $root/libs/"$lib"
+    wmake libso
+    cd $root
+done
+
+# Compile solvers 
+#wmake all solvers

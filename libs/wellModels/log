@@ -1,0 +1,21 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build    : 4.0-fdc2bc58d4a4
+Exec     : pSwCoupledFoam
+Date     : Jun 11 2019
+Time     : 15:37:14
+Host     : elwardi
+PID      : 10928
+CtrlDict : "/home/elwardi/MasterThesis/reservoir-simulator/libs/wellModels/system/controlDict"
+Case     : /home/elwardi/MasterThesis/reservoir-simulator/libs/wellModels
+nProcs   : 1
+SigFpe   : Enabling floating point exception trapping (FOAM_SIGFPE).
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+

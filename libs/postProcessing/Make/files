@@ -1,0 +1,4 @@
+functionObjects/wellFlowRate/wellFlowRate.C
+functionObjects/wellFlowRate/wellFlowRateFunctionObject.C
+
+LIB = $(FOAM_USER_LIBBIN)/libreservoirProcessing

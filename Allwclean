@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Compile porous models libraries 
+wclean libs/transportModels
+wclean libs/relativePermeabilityModels
+wclean libs/capillaryPressureModels
+wclean libs/wellModels
+# Compile boundary conditions
+wclean libs/finiteVolume/fields/fvPatchFields
+
+# Compile solvers 
+#wclean all solvers

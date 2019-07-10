@@ -1,0 +1,18 @@
+EXE_INC = \
+    -ggdb3 -DFULLDEBUG \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I$(LIB_SRC)/meshTools/lnInclude \
+    -I../../libs/transportModels/lnInclude \
+    -I../../libs/relativePermeabilityModels/lnInclude \
+    -I../../libs/capillaryPressureModels/lnInclude \
+    -I../../libs/wellModels/lnInclude \
+    -I../../libs/finiteVolume/fields/lnInclude
+
+EXE_LIBS = \
+    -lfiniteVolume \
+    -lmeshTools \
+    -L$(FOAM_USER_LIBBIN) \
+    -lphaseModels \
+    -lrelativePermeabilityModels \
+    -lcapillaryPressureModels \
+    -lwellModels
