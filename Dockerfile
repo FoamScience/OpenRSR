@@ -7,7 +7,6 @@ FROM ubuntu:xenial
 #        libxt-dev rpm mercurial graphviz python python-dev
 
 # Else, install binaries and continue
-RUN apt-get install wget git-core
 RUN wget https://sourceforge.net/projects/foam-extend/files/foam-extend-4.0/Ubuntu_16.04/foam-extend-4.0_amd64_Ubuntu1604_f500917.deb/download -O extend.deb
 RUN apt ./extend.deb
 
