@@ -1,5 +1,8 @@
 > This work is not affiliated with OpenCFD, the owner of the OpenFOAM trademark, in any
 > way.
+> If you need old versions of the code, they are now available in 
+> [this Bitbucket repo](https://bitbucket.org/FoamScience/reservoir-simulator/src) 
+> although the code is messy.
 
 
 # Open Reservoir Simulation Research tool
@@ -36,13 +39,15 @@ The whole purpose of the library is to provide open-access for reservoir enginee
 beyond classic IMPES simulations and research their own ideas easily, with no third party 
 (Giant Oil & Gas Companies) telling them what models to use and what's not. People should 
 always have access to the source code of the software they use, especially when scientific
-tasks.
+tasks are involved.
 
-> The most simple class is the capillary pressure model: "none", so it's good for new comers to go 
+> The most simple class is the capillary pressure model: 
+> [none](https://github.com/FoamScience/OpenRSR/blob/master/libs/capillaryPressureModels/none/none.H), 
+> so it's good for new comers to go 
 > there first; The most complex ones are the well classes for now.
 
 The coupled solver is probably the best choice in many cases, so stick with it until a
-fully implicit solver (Newton-Raphson) solver is developed; or develop your own.
+fully implicit solver (Newton-Raphson) solver is developed; or develop your own. :point_left:
 
 ## Installation and Usage Instructions
 
@@ -52,7 +57,7 @@ To compile all library parts to binary shared objects and
 executables
 (`Allwmake` script should have execution permissions):
 
-```{.sh}
+```sh
 ./Allwmake
 ```
 
@@ -65,29 +70,31 @@ situations.
 One can dynamically link some libraries in `controlDict` of a simulation 
 case by adding the following entry:
 
-```{.cpp}
+```cpp
 libs
 (
     libmyOwnKrModels.so
 );
 ```
 
-Which should allow for use of custom relative permeability (for example) models
-without modifying existing solvers.
+Which should allow for use of custom relative permeability models (for example) 
+without modifying existing solvers (Like UDFs in commercial software).
 
 If a custom solver is to instantiate an object with the help
-of some library class, it must be statically linked (At compile time).
-[impesFoam](@ref pSwImpesFoam.C) has the simplest example:
+of some library class, the library must be statically linked (At compile time).
+IMPES solver shows the simplest example:
 
-```{.cpp}
-// Include parent virtual class header file for basic Kr models
+```cpp
+// Include parent virtual class header file for all two-phase Kr models
 #include "relativePermeabilityModel.H"
 
 // Now we can construct the model using static New method
 // And read its parameters from constant/transportProperties
-autoPtr<relativePermeabilityModel> krModel = relativePermeabilityModel::New("krModel", transportProperties, Sw);
+autoPtr<relativePermeabilityModel> krModel = 
+        relativePermeabilityModel::New("krModel", transportProperties, Sw);
 
-krModel->correct(); // Most models have a correct method which calculates or updates model results.
+krModel->correct(); // Most models have a correct method which 
+                    // calculates or updates model results.
 
 // We can now retrieve values (or refs to values) of interest from the class
 volScalarField& krw = krModel->phase1Kr();
@@ -97,7 +104,7 @@ volScalarField& krw = krModel->phase1Kr();
 And make sure the solver's `Make/options` statically links the library in
 question:
 
-```{.bash}
+```sh
 EXE_INC = \
     # Some lnIncludes the solver already has
     -I../../libs/permeabilityModels/lnInclude # <-- path to library sources
@@ -123,5 +130,5 @@ The following benchmark cases belong to my master thesis
 
 - Buckley-Levrett Theory (many scenarios under different circumstances).
 - SPE10 Dataset A
-- A Reduced model for GRDC reservoir (described in the master thesis) is published 
+- A Reduced model for GRDC reservoir (described in the master thesis) will be published 
   in the repos.
