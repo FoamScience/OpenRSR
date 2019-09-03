@@ -44,7 +44,6 @@ SourceFiles
 #include "volFields.H"
 #include "HCmixture.H"
 #include "phase.H"
-#include "well.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -82,13 +81,6 @@ protected:
 
         //- Phase Relative permeability derivatives
         volScalarField dkr1dS_,dkr2dS_;
-
-        //- Special treatment for kr in well cells
-        wordList wells_;
-
-        //- Well Kr model coeffs (following Brooks-Corey)
-        scalar wellKrSwmin_, wellKrSnmin_, wellKrNw_, wellKrNo_;
-        scalar wellKr1Max_, wellKr2Max_;
 
         //- Disallow copy construct
         relativePermeabilityModel(const relativePermeabilityModel&);
@@ -182,9 +174,6 @@ public:
             return dkr1dS_;
         }
 
-        //- Modify kr values in wells that are switching operation modes
-        void modifyKrInWells();
-          
         //- Correct the relative permeabilities
         virtual void correct() = 0; 
 

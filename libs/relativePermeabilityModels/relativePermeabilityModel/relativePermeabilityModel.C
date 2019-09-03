@@ -29,8 +29,8 @@ License
 
 namespace Foam
 {
-defineTypeNameAndDebug(relativePermeabilityModel, 0);
-defineRunTimeSelectionTable(relativePermeabilityModel, dictionary);
+    defineTypeNameAndDebug(relativePermeabilityModel, 0);
+    defineRunTimeSelectionTable(relativePermeabilityModel, dictionary);
 }
 
 
@@ -101,11 +101,7 @@ Foam::relativePermeabilityModel::relativePermeabilityModel
         ),
         S_.mesh(),
         dimensionedScalar("dkrdS", dimless, 0.0)
-    ),
-    wells_(),
-    wellKrSwmin_(0), wellKrSnmin_(1),
-    wellKrNw_(2), wellKrNo_(2),
-    wellKr1Max_(1), wellKr2Max_(1)
+    )
 {}
 
 Foam::autoPtr<Foam::relativePermeabilityModel> Foam::relativePermeabilityModel::New
@@ -146,69 +142,4 @@ Foam::autoPtr<Foam::relativePermeabilityModel> Foam::relativePermeabilityModel::
         (cstrIter()(name, transportProperties, phase1, phase2));
 }
 
-
-void Foam::relativePermeabilityModel::modifyKrInWells()
-{
-    // By the time this function is called, wells must be constructed
-    // This function should be executed just before correcting BC
-    // in all models' correct method
-    wells_ = well::wellsNames;
-    forAll(wells_, welli)
-    {
-        //- Const Ref to well object
-        const well& currentWell = S_.mesh().lookupObject<well>(wells_[welli]);
-
-        if
-        (
-             (currentWell.allowSwitchingModes())
-                and 
-             (not(transportProperties_.found("wellKrModel<"+currentWell.name()+">")))
-        )
-        {
-            // Should we output this only for debugging??
-            WarningIn("void Foam::relativePermeabilityModel::modifyKrInWells()")
-                << nl << tab
-                << "Well " << currentWell.name() << " was set to allow switching "
-                << "operation modes but no special Kr model was specified." 
-                << nl << tab 
-                << "If a segFault occurs, please set a Brooks-Corey Kr coefficients for this well"
-                << " in transportPeroperties\n\tor disable switching operation mode:"
-                << nl << tab 
-                << "wellKrModel<" << currentWell.name() << "> Swmin Somax nw no krwMax kroMax;"
-                << nl << endl;
-        }
-
-        //- Make changes only if the well is expected to switch operation mode
-        if
-        (
-            (currentWell.allowSwitchingModes())
-            and 
-            (transportProperties_.found("wellKrModel<"+currentWell.name()+">"))
-        )
-        {
-        transportProperties_.lookup("wellKrModel<"+currentWell.name()+">")
-            >> wellKrSwmin_ >> wellKrSnmin_
-            >> wellKrNw_ >> wellKrNo_ 
-            >> wellKr1Max_ >> wellKr2Max_;
-
-            // The actual modification of kr
-            const labelList& cells = currentWell.cellIDs();
-            forAll(cells, celli)
-            {
-                const label cellID = cells[celli];
-                // Skip cell if S > Sc
-                //if(S_[cellID] > wellKrSnmin_) continue;
-                if(kr1_[cellID] > SMALL) continue;
-
-                // Otherwise, correct permeabilites
-                scalar Se = (S_[cellID]-wellKrSwmin_)/(1-wellKrSwmin_-wellKrSnmin_);
-                kr1_[cellID] = wellKr1Max_*pow(Se, wellKrNw_);
-                kr2_[cellID] = wellKr2Max_*pow(1.0-Se, wellKrNo_);
-                dkr1dS_[cellID] = wellKr1Max_*wellKrNw_*pow(Se, wellKrNw_-1)/(1-wellKrSwmin_-wellKrSnmin_);
-                dkr2dS_[cellID] = -wellKr2Max_*wellKrNo_*pow(Se, wellKrNo_-1)/(1-wellKrSwmin_-wellKrSnmin_);
-            }
-        }
-
-    }
-}
 // ************************************************************************* //

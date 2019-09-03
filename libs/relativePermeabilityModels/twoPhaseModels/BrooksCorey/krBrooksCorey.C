@@ -270,9 +270,6 @@ void Foam::relativePermeabilityModels::krBrooksCorey::correct()
         }
     }
 
-    // Don't forget to adjust Kr values in wells that need switching modes
-    modifyKrInWells();
-
     // It's unbelievable how important these lines are !!!!
     kr1_.correctBoundaryConditions();
     kr2_.correctBoundaryConditions();

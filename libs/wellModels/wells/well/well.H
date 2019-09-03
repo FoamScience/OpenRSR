@@ -84,6 +84,8 @@ public:
             BHP,             /*!< Constant BHP */
         };
 
+
+
         //- Enueration for handling operationModes
         enum operationHandling
         {
