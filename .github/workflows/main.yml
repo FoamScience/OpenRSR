@@ -1,0 +1,32 @@
+name: OpenRSR-Compilation
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu:bionic
+    
+    steps:
+    - uses: actions/checkout@v1
+    - name: Run a multi-line script
+      run: |
+        apt update
+        yes | apt install git-core build-essential binutils-dev cmake flex bison zlib1g-dev libncurses5-dev libxt-dev rpm mercurial graphviz python python-dev  gcc-5 g++-5
+        mkdir foam
+        cd foam
+        git clone https://github.com/FoamScience/OpenRSR.foam.git fe4
+        mv fe4/foam-extend-4.0 .
+        rm -r fe4
+        cd foam-extend-4.0
+        echo export WM_THIRD_PARTY_USE_BISON_27=1  >> etc/prefs.sh
+        echo "export WM_CC='gcc-5'"  >> etc/prefs.sh
+        echo "export WM_CXX='g++-5'"  >> etc/prefs.sh
+        . etc/bashrc
+        sed -i -e 's=rpmbuild --define=rpmbuild --define "_build_id_links none" --define=' ThirdParty/tools/makeThirdPartyFunctionsForRPM
+        sed -i -e 's/gcc/\$(WM_CC)/' wmake/rules/linux64Gcc/c
+        sed -i -e 's/g++/\$(WM_CXX)/' wmake/rules/linux64Gcc/c++
+        yes | ./Allwmake.firstInstall
+        cd git clone https://github.com/FoamScience/OpenRSR.git
+        cd OpenRSR
+        ./Allwmake
