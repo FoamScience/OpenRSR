@@ -1,0 +1,16 @@
+git:
+  depth: 3
+addons:
+  apt:
+    packages:
+      - docker-ce
+services:
+    - docker
+
+before_install:
+  - docker run --name=fe4 foamscience/openrsr /bin/bash -c "ls -l"
+
+language: c++
+
+script:
+  - bash pwd
