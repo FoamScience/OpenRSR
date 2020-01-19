@@ -11,7 +11,7 @@ language:
     - c++
 
 script:
-  - docker run --name fe4 -v $PWD:/home/foam/foam/OpenRSR foamscience/openrsr /bin/bash -c "echo 'Container instantiated'"
-  - docker exec -it fe4 "cd foam/OpenRSR; ./Allwmake"
-  - docker exec -it fe4 "cd foam/OpenRSR/solvers/pSwCoupledFoam; wmake"
-  - docker exec -it fe4 "cd foam/OpenRSR/tutorials; ls"
+  - docker run --rm -v $PWD:/home/foam/foam/OpenRSR foamscience/openrsr /bin/bash -c "echo 'Container instantiated';"\
+    "cd foam/OpenRSR; ./Allwmake;"\
+    "cd foam/OpenRSR/solvers/pSwCoupledFoam; wmake;"\
+    "cd foam/OpenRSR/tutorials; ls;"
