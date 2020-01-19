@@ -7,9 +7,5 @@ addons:
 services:
     - docker
 
-language: 
-  - c++
-
 script:
-  - ls -l
-  - docker run --rm -v $PWD:/home/foam/foam/OpenRSR foamscience/openrsr /bin/bash -c "./.build.sh"
+  - docker run --rm -v $PWD:/home/foam/foam/OpenRSR foamscience/openrsr /bin/bash -c "ls -l -a"
