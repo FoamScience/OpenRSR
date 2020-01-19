@@ -3,8 +3,8 @@
 
 set -ev
 
-# Foam-Extend-4 is installed in a user (foam) home directory
-. $HOME/foam/foam-4.0/etc/bashrc
+# System-wide access to FE4
+source /opt/foam/foam-extend-4.0/etc/bashrc
 
 # build libraries and solvers
 cd $HOME/foam/OpenRSR; ./Allwmake
