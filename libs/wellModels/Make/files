@@ -1,7 +1,0 @@
-wells/well/well.C
-wells/vertical/verticalWells.C
-
-wellModel/wellModel.C
-wellModels/Peaceman/Peaceman.C
-
-LIB = $(FOAM_USER_LIBBIN)/libwellModels

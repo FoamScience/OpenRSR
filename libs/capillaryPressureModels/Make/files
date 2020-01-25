@@ -1,7 +1,0 @@
-capillaryPressureModel/capillaryPressureModel.C
-
-pcBrooksCorey/pcBrooksCorey.C
-pcNormalizedLogarithmic/normalizedLogarithmic.C
-none/none.C
-
-LIB = $(FOAM_USER_LIBBIN)/libcapillaryPressureModels

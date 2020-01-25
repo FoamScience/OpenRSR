@@ -1,3 +1,0 @@
-derived/porousIsoKFixedGradientPressure/porousIsoKFixedGradientPressureFvPatchScalarField.C
-
-LIB = $(FOAM_USER_LIBBIN)/libreservoirBCs
