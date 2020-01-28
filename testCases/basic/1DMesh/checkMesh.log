@@ -1,0 +1,80 @@
+/*---------------------------------------------------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  | For copyright notice see file Copyright         |
+\*---------------------------------------------------------------------------*/
+Build    : 4.0-268bb07d15d8
+Exec     : checkMesh -constant
+Date     : Jan 27 2020
+Time     : 14:26:16
+Host     : Elwardi-PC
+PID      : 8773
+CtrlDict : "/home/elwardi/GitRepos/OpenRSR/testCases/basic/1DMesh/system/controlDict"
+Case     : /home/elwardi/GitRepos/OpenRSR/testCases/basic/1DMesh
+nProcs   : 1
+SigFpe   : Enabling floating point exception trapping (FOAM_SIGFPE).
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+Create time
+
+Create polyMesh for time = constant
+
+Time = constant
+
+Mesh stats
+    all points:           44
+    live points:          44
+    all faces:            51
+    live faces:           51
+    internal faces:       9
+    cells:                10
+    boundary patches:     3
+    point zones:          0
+    face zones:           0
+    cell zones:           0
+
+Overall number of cells of each type:
+    hexahedra:     10
+    prisms:        0
+    wedges:        0
+    pyramids:      0
+    tet wedges:    0
+    tetrahedra:    0
+    polyhedra:     0
+
+Checking topology...
+    Boundary definition OK.
+    Point usage OK.
+    Upper triangular ordering OK.
+    Face vertices OK.
+    Number of regions: 1 (OK).
+
+Checking patch topology for multiply connected surfaces ...
+    Patch               Faces    Points   Area [m^2]  Surface topology                  
+    inlet               1        4        1           ok (non-closed singly connected)  
+    outlet              1        4        1           ok (non-closed singly connected)  
+    emptyWalls          40       44       40          ok (non-closed singly connected)  
+
+Checking geometry...
+    This is a 1-D mesh
+    Overall domain bounding box (0 0 0) (10 1 1)
+    Mesh (non-empty, non-wedge) directions (1 0 0)
+    Mesh (non-empty) directions (1 0 0)
+    Mesh (non-empty, non-wedge) dimensions 1
+    All edges aligned with or perpendicular to non-empty directions.
+    Boundary openness (0 0 0) Threshold = 1e-06 OK.
+    Max cell openness = 0 OK.
+    Max aspect ratio = 1 OK.
+    Minumum face area = 1. Maximum face area = 1.  Face area magnitudes OK.
+    Min volume = 1. Max volume = 1.  Total volume = 10.  Cell volumes OK.
+    Mesh non-orthogonality Max: 0 average: 0 Threshold = 70
+    Non-orthogonality check OK.
+    Face pyramids OK.
+    Max skewness = 1.04452e-14 OK.
+
+Mesh OK.
+
+End
+

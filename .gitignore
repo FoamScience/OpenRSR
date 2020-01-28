@@ -1,0 +1,6 @@
+.ccls-cache/**
+**/.ccls-cache
+**.dep
+**.json
+**@*
+**linux64**
