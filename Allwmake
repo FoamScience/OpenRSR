@@ -3,10 +3,7 @@
 # Run twice to get paths to compiled shared objects
 
 # List of library parts to compile in this order
-lbs="transportModels\
-    relativePermeabilityModels\
-    capillaryPressureModels\
-    wellModels"
+lbs="petroleumTransportModels"
 root=$PWD
 
 # Compile porous models libraries 

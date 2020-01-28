@@ -3,7 +3,7 @@
 set -ev
 
 # Source FE4
-source /home/foam/foam/foam-4.0/etc/bashrc
+source /opt/foam/foam-extend-4.0/etc/bashrc
 
 # Get to the directory, compile libraries (Opt mode)
 cd /home/foam/OpenRSR; ./Allwmake
