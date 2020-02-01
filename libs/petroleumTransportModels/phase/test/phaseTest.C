@@ -41,25 +41,28 @@ Developers
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 using namespace Foam;
-using namespace Catch::Matchers;
 
 SCENARIO("Phase Object Creation with Default configuration", "[Virtual]")
 {
     GIVEN("Time, mesh, a child of 'phase' class and a valid transportProperties dictionary")
     {
         #include "createTestTimeAndMesh.H"
-        
+
         // A child phase object
         class childPhase : public phase
         {
             public:
                 childPhase(
-                        const word& name, 
-                        const dictionary& transportProperties, 
-                        const fvMesh& mesh
+                    const word& name,
+                    const dictionary& transportProperties,
+                    const fvMesh& mesh
                 ) : phase(name, transportProperties, mesh) { }
-                virtual void correct(){}
-                bool writeData(Ostream& os) const {return 0;}
+                virtual void correct(){
+                    phiPtr_->correctBoundaryConditions();
+                    U_ = fvc::reconstruct(phiPtr_());
+                    U_.correctBoundaryConditions();
+                }
+                bool writeData(Ostream& os) const { notImplemented("bool writeData(Ostream&) const"); }
         };
 
         word phaseName = "water";
@@ -67,6 +70,33 @@ SCENARIO("Phase Object Creation with Default configuration", "[Virtual]")
         // The transportProperties dict
         dictionary transportProperties;
         transportProperties.add(phaseName, dictionary());
+
+        WHEN("Calling correct() on a stack-allocated phase object")
+        {
+            // Needs the presence of '0/water.U' dictionary
+            childPhase waterPhase(phaseName, transportProperties, mesh);
+
+            surfaceScalarField& phi = waterPhase.phi();
+            volVectorField& U = waterPhase.U();
+
+            // Emitate a parabolic U profile
+            forAll(U.internalField(), ci)
+            {
+                U.internalField()[ci] = vector(mesh.nCells() - ci, 0, 0);
+            }
+            U.correctBoundaryConditions();
+
+            // Needs to set div(water.phi, water.U) in system/fvSchemes
+            waterPhase.correct();
+
+            THEN("Velocity must be constructed properly from phase flux using Weller's approximation")
+            {
+                // Particularly test if fvc::reconstruct has changed!
+                // fvc::reconstruct may be dissipative near some BCs
+                surfaceScalarField newPhi = linearInterpolate(U) & mesh.Sf();
+                REQUIRE( phi.internalField()==newPhi.internalField() );
+            }
+        }
 
         WHEN("Allocating a child phase object on the stack with default configuration")
         {
@@ -87,12 +117,8 @@ SCENARIO("Phase Object Creation with Default configuration", "[Virtual]")
                     const scalarList& bSw = Sw.boundaryField()[patchi];
                     if (BCtypes[patchi] != "empty")
                     REQUIRE( bSw == scalarList(bSw.size(), 1.0) );
-                    //forAll(mesh.boundaryMesh()[patchi], facei)
-                    //{
-                    //    REQUIRE( Sw.boundaryField()[patchi][facei] == 1.0 );
-                    //}
                 }
-                
+
                 // Print (byte) size of phase object
                 //Info << int(sizeof(waterPhase)) << endl;
             }

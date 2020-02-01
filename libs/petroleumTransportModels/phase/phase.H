@@ -21,6 +21,12 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
+Namespace
+    Foam::phaseModels
+
+Description
+    A namespace to hold phase classes
+
 Class
     Foam::phase
 
@@ -37,6 +43,9 @@ SourceFiles
 
 #include "volFields.H"
 #include "regIOobject.H"
+#include "fvcFlux.H"
+#include "fvcSurfaceIntegrate.H"
+#include "fvcReconstruct.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -69,6 +78,10 @@ protected:
 
         //- Phase saturation in a mixture
         volScalarField alpha_;
+
+        //- Phase flux
+        autoPtr<surfaceScalarField> phiPtr_;
+
 
 public:
 
@@ -121,6 +134,18 @@ public:
         volScalarField& alpha()
         {
             return alpha_;
+        }
+
+        //- Return const ref to flux
+        const surfaceScalarField& phi() const
+        {
+            return phiPtr_();
+        }
+        
+        //- Return ref to flux
+        surfaceScalarField& phi()
+        {
+            return phiPtr_();
         }
 
         // Correct phase properties

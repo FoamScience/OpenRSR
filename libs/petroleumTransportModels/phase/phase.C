@@ -72,6 +72,22 @@ Foam::phase::phase
         ),
         mesh_,
         dimensionedScalar(name+".alpha", dimless, 1.0)
+    ),
+    phiPtr_
+    ( 
+         new surfaceScalarField
+         (
+             IOobject
+             (
+                 name+".phi",
+                 mesh.time().timeName(),
+                 mesh,
+                 IOobject::NO_READ,
+                 IOobject::AUTO_WRITE
+             ),
+             linearInterpolate(U_) & mesh.Sf(),
+	        "fixedValue"
+         )
     )
 {
 }

@@ -1,3 +1,5 @@
 phase/phase.C
 
+phaseModels/incompressibleFluid/incompressibleFluid.C
+
 LIB = $(FOAM_USER_LIBBIN)/libpetroleumTransportModels
