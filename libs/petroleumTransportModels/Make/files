@@ -1,8 +1,9 @@
 phase/phase.C
 FVFModel/FVFModel.C
 
+FVFModels/tabulated/tabulatedFVF.C
 
 phaseModels/incompressibleFluid/incompressibleFluid.C
-FVFModels/tabulated/tabulatedFVF.C
+phaseModels/blackoilPhase/blackoilPhase.C
 
 LIB = $(FOAM_USER_LIBBIN)/libpetroleumTransportModels

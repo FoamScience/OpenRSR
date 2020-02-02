@@ -25,7 +25,7 @@ Application
     phaseTest
 
 Description
-    Tests for the incomressible phase object
+    Tests for the incompressible phase object
 
 Developers
     F. Mohamed Elwardi

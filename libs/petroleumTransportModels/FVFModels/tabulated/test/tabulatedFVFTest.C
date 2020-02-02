@@ -43,7 +43,7 @@ Developers
 
 using namespace Foam;
 
-SCENARIO("Tabulated FVF Model with before and after bubble point data")
+SCENARIO("Tabulated FVF Model with before-and-after bubble point data")
 {
     GIVEN("Pressure field and FVF data file (FVF.dat for example)")
     {
