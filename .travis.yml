@@ -7,8 +7,8 @@ addons:
 services:
     - docker
 
-language: 
-  - c++
+os: linux
+language: cpp
 
 script:
   - docker run --rm -u root -v $PWD:/home/foam/OpenRSR foamscience/openrsr /bin/bash -c "/home/foam/OpenRSR/scripts/docker_build.sh"
