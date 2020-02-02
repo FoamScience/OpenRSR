@@ -94,7 +94,7 @@ SCENARIO("Black oil Phase Interface integrity")
                 oilPhase.correct();
 
                 std::vector<scalar> rhoCalc(mesh.nCells(), 0);
-                std::vector<scalar> rhoManual(mesh.nCells(), 540.91964);
+                std::vector<scalar> rhoManual(mesh.nCells(), 545.91964);
                 forAll(rhoCalc, ci)
                 {
                     rhoCalc[ci] = oilPhase.rho().internalField()[ci];
