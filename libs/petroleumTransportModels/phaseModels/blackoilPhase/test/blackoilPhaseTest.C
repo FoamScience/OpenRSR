@@ -41,6 +41,7 @@ Developers
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 using namespace Foam;
+using namespace phaseModels;
 
 SCENARIO("Black oil Phase Interface integrity")
 {

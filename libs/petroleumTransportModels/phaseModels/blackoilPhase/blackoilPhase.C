@@ -28,7 +28,7 @@ License
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::blackoilPhase::blackoilPhase
+Foam::phaseModels::blackoilPhase::blackoilPhase
 (
     const word& name,
     const dictionary& transportProperties,
@@ -74,7 +74,7 @@ Foam::blackoilPhase::blackoilPhase
 
 // * * * * * * * * * * * * * Private Member Functions * * * * * * * * * * * //
 
-void Foam::blackoilPhase::correct()
+void Foam::phaseModels::blackoilPhase::correct()
 {
     // Run the model's correct() method to calculate FVF = f(P)
     BModel_->correct();

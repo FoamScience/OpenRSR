@@ -1,0 +1,1 @@
+../relativePermeabilityModel/test/relativePermeabilityModelBaseTest.C

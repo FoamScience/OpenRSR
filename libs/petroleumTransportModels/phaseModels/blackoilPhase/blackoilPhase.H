@@ -44,6 +44,9 @@ SourceFiles
 namespace Foam
 {
 
+namespace phaseModels
+{
+
 /*---------------------------------------------------------------------------*\
                Class blackoilPhase Declaration
 \*---------------------------------------------------------------------------*/
@@ -150,6 +153,8 @@ public:
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace phaseModels
 
 } // End namespace Foam
 
