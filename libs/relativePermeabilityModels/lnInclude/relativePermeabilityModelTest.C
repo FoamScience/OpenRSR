@@ -1,1 +1,0 @@
-../krModel-old/test/relativePermeabilityModelTest.C
