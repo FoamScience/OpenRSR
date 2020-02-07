@@ -1,5 +1,6 @@
 relativePermeabilityModel/relativePermeabilityModelBases.C
 
 twoPhaseModels/BrooksCorey/krBrooksCorey.C
+twoPhaseModels/tabulated/krTabulated.C
 
 LIB = $(FOAM_USER_LIBBIN)/librelativePermeabilityModels

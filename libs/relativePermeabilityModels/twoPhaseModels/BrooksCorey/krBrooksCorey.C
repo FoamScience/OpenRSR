@@ -53,11 +53,10 @@ Foam::relativePermeabilityModels::krBrooksCorey::krBrooksCorey
     :
     base2PhasesKrModel(name, transportProperties, mesh),
     coeffsDict_(transportProperties.subDict(typeName+"Coeffs")),
-    phaseNames_
-    (
+    phaseNames_(
         coeffsDict_.found("phases")
         ? coeffsDict_.lookup("phases")
-        : mesh.objectRegistry::names<phase>()
+        : mesh_.objectRegistry::names<phase>()
     ),
     canonicalPhase_(coeffsDict_.lookup("canonicalPhase")),
     theOtherPhase_(phaseNames_[0] != canonicalPhase_ ? phaseNames_[0] : phaseNames_[1]),
@@ -165,7 +164,6 @@ Foam::relativePermeabilityModels::krBrooksCorey::krBrooksCorey
         )
     )
 {
-
     // Input Checks
     if (gMin(mn_) <= 0)
     {

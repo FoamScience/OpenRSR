@@ -1,1 +1,1 @@
-../twoPhaseModels/BrooksCorey/test/krBrooksCoreyTest.C
+../twoPhaseModels/tabulated/test/krBrooksCoreyTest.C

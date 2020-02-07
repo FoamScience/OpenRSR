@@ -45,6 +45,7 @@ SourceFiles
 #include "runTimeSelectionTables.H"
 #include "addToRunTimeSelectionTable.H"
 #include "fvMesh.H"
+#include "phase.H"
 #include "volFields.H"
 #include "volFieldsFwd.H"
 #include "phaseCalculations.H"
@@ -163,6 +164,11 @@ public:
         //- Correct relative permeability fields
         virtual void correct() = 0;
 
+        //- Return associated phase names as a list
+        virtual const wordList phaseNames() const = 0;
+
+        //- Return canonical phase name
+        virtual const word canonicalPhase() const = 0;
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

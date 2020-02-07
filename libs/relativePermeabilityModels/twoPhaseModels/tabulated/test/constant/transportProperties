@@ -1,0 +1,42 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | foam-extend: Open Source CFD                    |
+|  \\    /   O peration     | Version:     4.0                                |
+|   \\  /    A nd           | Web:         http://www.foam-extend.org         |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      transportProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+oil
+{
+    rho rho [1 -3  0 0 0] 700;
+    mu  mu    [1 -1 -1 0 0] 3e-3;
+}
+
+water
+{
+    rho rho [1 -3  0 0 0] 1000;
+    mu  mu    [1 -1 -1 0 0] 1e-3;
+}
+
+relativePermeabilityModel "tabulated";
+
+tabulatedCoeffs
+{
+    canonicalPhase water;
+    //phases         (water oil);
+
+    outOfBounds warn;
+    fileName    "kr.dat";
+}
+
+
+// ************************************************************************* //

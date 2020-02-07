@@ -76,11 +76,10 @@ class krBrooksCorey
         //- Coefficients dictionary
         dictionary coeffsDict_;
 
-        //- Phase names
+        //- Associated phase names
         wordList phaseNames_;
 
         //- Canonical phase name
-        // Ideally, the one which has increasing saturation
         word canonicalPhase_;
 
         // The other phase
@@ -121,9 +120,20 @@ public:
 
     // Public Member Functions
 
-        //- Correct the relative permeabilities
-        void correct();
+        //- Return associated phase names as a list
+        const wordList phaseNames() const 
+        {
+            return phaseNames_;
+        }
 
+        //- Return canonical phase name
+        const word canonicalPhase() const
+        {
+            return canonicalPhase_;
+        }
+
+        //- Correct the relative permeabilities
+        virtual void correct();
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
