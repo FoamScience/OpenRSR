@@ -2,6 +2,17 @@
 # This should be invoked from root directory of the toolkit
 # Run twice to get paths to compiled shared objects
 
+check_errs()
+{
+  # Function. Parameter 1 is the return code
+  # Para. 2 is text to display on failure.
+  if [ "${1}" -ne "0" ]; then
+    echo "ERROR # ${1} : ${2}"
+    # as a bonus, make our script exit with the right error code.
+    exit ${1}
+  fi
+}
+
 # List of library parts to compile in this order
 lbs="petroleumTransportModels\
     relativePermeabilityModels"
@@ -9,8 +20,12 @@ root=$PWD
 
 # Compile porous models libraries 
 for lib in $lbs; do
+    echo "--------------------------------------------"
+    echo "Compiling library: $lib"
+    echo "--------------------------------------------"
     cd $root/libs/"$lib"
     wmake libso
+    check_errs $? "Library didn't compile ... ugh"
     cd $root
 done
 
