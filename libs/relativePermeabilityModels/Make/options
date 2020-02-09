@@ -1,7 +1,7 @@
 EXE_INC = \
     --std=c++11 \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
-    -I./include \
+    -I../include \
     -I../petroleumTransportModels/lnInclude
 
 

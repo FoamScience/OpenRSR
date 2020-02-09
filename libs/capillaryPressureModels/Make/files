@@ -1,0 +1,3 @@
+capillaryPressureModel/capillaryPressureModelBases.C
+
+LIB = $(FOAM_USER_LIBBIN)/libcapillaryPressureModels

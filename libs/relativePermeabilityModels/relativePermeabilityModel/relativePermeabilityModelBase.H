@@ -48,7 +48,7 @@ SourceFiles
 #include "phase.H"
 #include "volFields.H"
 #include "volFieldsFwd.H"
-#include "phaseCalculations.H"
+#include "krPcCompileCalculations.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -77,10 +77,10 @@ protected:
         const fvMesh& mesh_;
 
         //- Phase Relative permeabilities
-        volKrField<numberOfKrFields(nPhases)> kr_;
+        volVectorNField<numberOfKrFields(nPhases)> kr_;
 
         //- Phase Relative permeability derivatives
-        volKrField<numberOfKrFields(nPhases)> dkrdS_;
+        volVectorNField<numberOfKrFields(nPhases)> dkrdS_;
 
         //- Disallow copy construct
         relativePermeabilityModelBase(const relativePermeabilityModelBase&);
@@ -150,13 +150,13 @@ public:
         }
 
         //- Return Kr table as a hole (For debugging)
-        const volKrField<numberOfKrFields(nPhases)>& krTable() const
+        const volVectorNField<numberOfKrFields(nPhases)>& krTable() const
         {
             return kr_;
         }
 
         //- Return Kr table as a hole (For debugging)
-        const volKrField<numberOfKrFields(nPhases)>& dkrdSTable() const
+        const volVectorNField<numberOfKrFields(nPhases)>& dkrdSTable() const
         {
             return dkrdS_;
         }

@@ -80,8 +80,10 @@ public:
             const dictionary& transportProperties,
             const fvMesh& mesh
     ): relativePermeabilityModelBase<2>(name, transportProperties, mesh){}
-    virtual ~childKrModel (){}
+    virtual ~childKrModel(){}
     virtual void correct(){}
+    virtual const wordList phaseNames() const {return wordList();};
+    virtual const word canonicalPhase() const {return word("");  };
 };
 
 #include "addToRunTimeSelectionTable.H"

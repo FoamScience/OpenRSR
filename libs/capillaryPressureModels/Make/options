@@ -1,0 +1,11 @@
+EXE_INC = \
+    --std=c++11 \
+    -I$(LIB_SRC)/finiteVolume/lnInclude \
+    -I../include \
+    -I../petroleumTransportModels/lnInclude
+
+
+LIB_LIBS = \
+    -lfiniteVolume \
+    -L$(FOAM_USER_LIBBIN) \
+    -lpetroleumTransportModels
