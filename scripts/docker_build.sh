@@ -26,7 +26,8 @@ for t in $tests; do
     echo "------------------------------------------"
     pushd . > /dev/null
     cd $t
-    wmake && ./*Test
-    check_errs $? "Something went wrong"
+    wmake
+    check_errs $? "Test didn't compile ..."
+    ./*Test
     popd > /dev/null
 done
