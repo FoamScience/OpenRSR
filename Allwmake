@@ -15,7 +15,8 @@ check_errs()
 
 # List of library parts to compile in this order
 lbs="petroleumTransportModels\
-    relativePermeabilityModels"
+    relativePermeabilityModels\
+    capillaryPressureModels"
 root=$PWD
 
 # Compile porous models libraries 
