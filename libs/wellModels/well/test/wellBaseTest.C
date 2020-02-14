@@ -140,6 +140,24 @@ SCENARIO("Integration between wellBase class templates and wellModel class")
                 REQUIRE(aWell->iPhase() == word("noPhaseTestFunctor"));
             }
         }
+
+        WHEN("A Well object is constructed")
+        {
+            autoPtr<wellModel>    wModel = 
+                wellModel::New("derivedWellModel", wellProperties, mesh);
+            autoPtr<base2IsoWell> aWell  = 
+                base2IsoWell::New( "aWell", wellProperties, mesh, wModel());
+            THEN("Perforation intervals are read correctly")
+            {
+                CHECK(wellProperties.subDict("aWell").found("perforations"));
+                labelList wellCells(4);
+                wellCells[0] = 0;
+                wellCells[1] = 1;
+                wellCells[2] = 5;
+                wellCells[3] = 6;
+                REQUIRE(aWell->cellIDs() == wellCells);
+            }
+        }
     }
 }
 

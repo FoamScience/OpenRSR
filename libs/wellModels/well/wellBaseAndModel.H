@@ -226,7 +226,7 @@ public:
         }
 
         //- Read perforations
-        //void readPerforations();
+        void readPerforations();
 
         //- Const access to next timeStep to catch rate changes
         const scalar& nextTimeStep() const {

@@ -22,6 +22,19 @@ aWell
     wellType childWell;
     operationMode production;
     radius 1;
+
+    perforations
+    (
+        labelToCell
+        {
+            value  (0 1);
+        }
+
+        labelToCell
+        {
+            value  (5 6);
+        }
+    );
 }
 
 

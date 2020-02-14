@@ -78,6 +78,9 @@ wellBase<KType, nPhases>::wellBase
     tV_(0.0),
     timeForDt_(VGREAT)
 {
+    // Read Well perforations
+    // Updates perfos_ and wellSet_
+    readPerforations();
 }
 
 
@@ -172,6 +175,57 @@ Foam::wellBase<KType, nPhases>::wordToOperationHandling
         return wellBase<KType, nPhases>::PROD;
     }
 }
+
+
+template<class KType, int nPhases>
+void wellBase<KType, nPhases>::readPerforations()
+{
+    Info << "Constructing cells for well: " << name_ << nl;
+
+    // Temp-Store perforation entries in dict
+    const PtrList<entry> perfsInfo 
+    (
+        wellDict_.lookup("perforations")
+    );
+
+    // Reshape perforations list
+    perfos_.setSize(perfsInfo.size());
+
+    // Construct cells from given topoSetSources
+    forAll(perfos_, perfi)
+    {
+        // Select a perforation interval
+        const entry& perfInfo = perfsInfo[perfi];
+
+        // Require that the perforation interval is a valid dict
+        if(!perfInfo.isDict())
+        {
+            FatalIOErrorIn(__PRETTY_FUNCTION__, wellDict_)
+                << "Entry " << perfInfo << " in wells section is not a"
+                << " valid dictionary." << exit(FatalIOError);
+        }
+
+        // Set the pointer to the requested topoSetSource
+        perfos_.set(
+            perfi,
+            topoSetSource::New(perfInfo.keyword(), mesh_, perfInfo.dict())
+        );
+
+        // Include selected cells in the well's cell set
+        perfos_[perfi].applyToSet(topoSetSource::ADD, wellSet_);
+    }
+
+    // Write well set to disk
+    if (debug) wellSet_.write();
+}
+
+
+
+
+
+
+
+
 
 
 
