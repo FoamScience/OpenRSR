@@ -5,10 +5,13 @@ EXE_INC = \
     -I../../../include \
     -I../../lnInclude \
     -I../../../../testCases/catch2/lnInclude \
+    -I../../../petroleumTransportModels/lnInclude \
     -fpermissive
+
 
 EXE_LIBS = \
     -lfiniteVolume \
     -lmeshTools \
     -L$(FOAM_USER_LIBBIN) \
+    -lpetroleumTransportModels \
     -lwellModels

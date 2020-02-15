@@ -53,6 +53,7 @@ wellBase<KType, nPhases>::wellBase
             IOobject::NO_WRITE
         )
     ),
+    driveHandling(nPhases+1),
     name_(name),
     wellProperties_(wellProperties),
     mesh_(mesh),
@@ -74,13 +75,35 @@ wellBase<KType, nPhases>::wellBase
     ),
     perfos_(),
     wellSet_(mesh, name+"Set", 0),
+    phases_
+    (
+        wellDict_.found("phases") 
+        ? wellDict_.lookup("phases")
+        : mesh.objectRegistry::names<phase>()
+    ),
     source_(),
     tV_(0.0),
+    bhp_(name_+".bhp", dimPressure, 0.0),
+    tRate_(name_+".targetRate", dimVolume/dimTime, 0.0),
+    driveSeries_(),
     timeForDt_(VGREAT)
 {
     // Read Well perforations
     // Updates perfos_ and wellSet_
     readPerforations();
+
+    // Update total cells volume
+    cellsVolume();
+
+    // Update imposed drives
+    readImposedDrives();
+
+    // Initiate Drive HashTable
+    driveHandling.insert("BHP", 0);
+    forAll(phases_, phi)
+    {
+        driveHandling.insert(phases_[phi]+".rate", 0);
+    }
 }
 
 
@@ -220,6 +243,50 @@ void wellBase<KType, nPhases>::readPerforations()
 }
 
 
+template<class KType, int nPhases>
+void wellBase<KType, nPhases>::readImposedDrives()
+{
+    Info << "\tReading imposed drives for well: " << name_ << nl;
+
+    // Temp-Store drives entries in dict
+    const PtrList<entry> drivesInfo 
+    (
+        wellDict_.lookup("imposedDrives")
+    );
+
+    // Reshape drive series list
+    driveSeries_.setSize(nPhases-1);
+
+    // Fail if supplied drives are unacceptable
+    if (driveSeries_.size() != drivesInfo.size())
+        FatalIOErrorIn(__PRETTY_FUNCTION__, wellDict_)
+            << "Expected " << driveSeries_.size()
+            << " imposedDrives But " << drivesInfo.size()
+            << " encountered."
+            << exit(FatalError);
+
+    // Construct imposed drives list
+    forAll(driveSeries_, di)
+    {
+        // Select a drive
+        const entry& driveInfo = drivesInfo[di];
+
+        // Require that the drive is a valid dict
+        if(!driveInfo.isDict())
+        {
+            FatalIOErrorIn(__PRETTY_FUNCTION__, wellDict_)
+                << "Entry " << driveInfo << " in wells section is not a"
+                << " valid dictionary." << exit(FatalIOError);
+        }
+
+        // Set the requested drive
+        driveSeries_[di] = interpolationTable<scalar>(driveInfo.dict());
+
+        //- Activate drive in the hashTable
+        driveHandling.set(driveInfo.keyword(), di+1);
+    }
+
+}
 
 
 

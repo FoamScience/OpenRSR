@@ -35,6 +35,21 @@ aWell
             value  (5 6);
         }
     );
+
+    imposedDrives
+    (
+        //BHP
+        //{
+        //    fileName "bhp.dat";
+        //    outOfBounds warn;
+        //}
+
+        water.rate
+        {
+            fileName "wRate.dat";
+            outOfBounds warn;
+        }
+    );
 }
 
 

@@ -57,6 +57,7 @@ SourceFiles
 #include "parameterTypes.H"
 #include "cellSet.H"
 #include "topoSetSource.H"
+#include "interpolationTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -68,6 +69,7 @@ namespace Foam
 \*---------------------------------------------------------------------------*/
 
 class wellModel;
+class phase;
 
 template<class KType, int nPhases>
 class wellBase
@@ -78,12 +80,17 @@ public:
 
     // Public data members
 
-        //- Enueration for handling operationModes
+        //- Enumeration for handling operation modes
         enum operationHandling
         {
             PROD,             /*!< Production well */
             INJE,             /*!< Injection well */
         };
+
+        //- A Hash table for handling imposed drives
+        //  Currently reservers room to phase rates and BHP
+        //  Todo: add room for phaseDissolvedInPhaseRatio
+        HashTable<int> driveHandling;
 
 protected:
 
@@ -119,20 +126,45 @@ protected:
         //- Well topo set
         cellSet wellSet_;
 
+        //- Phase names list
+        wordList phases_;
+
         //- Well source
         List<VectorN<scalar, 2*nPhases> > source_;
 
         //- Well total volume
         scalar  tV_;
 
-       //- TimeStep to catch imposed wellRate/BHP changes
-       scalar timeForDt_;
+        //- Well BHP
+        dimensionedScalar bhp_;
+
+        //- Target well rate
+        dimensionedScalar tRate_;
+
+        //- Imposed Drive series
+        List<interpolationTable<scalar> > driveSeries_;
+
+        //- TimeStep to catch imposed wellRate/BHP changes
+        scalar timeForDt_;
+
+    // Protected Member Functions
 
         //- Disallow copy construct
         wellBase(const wellBase&);
 
         //- Disallow default bitwise assignment
         void operator=(const wellBase&);
+
+        //- Calculate total cell volume
+        inline void cellsVolume()
+        {
+            tV_ = 0;
+            forAll(wellSet_.toc(), ci)
+            {
+                tV_ += mesh_.V()[wellSet_.toc()[ci]];
+            }
+        }
+
 
 public:
 
@@ -225,8 +257,28 @@ public:
             return wellSet_.toc();
         }
 
+        //- Return target flowRate
+        const dimensionedScalar& targetRate() const
+        {
+            return tRate_;
+        }
+
+        //- Retrieve imposed drive value from series
+        scalar driveAtTime(word activeDrive, scalar index) const
+        {
+            scalar imposedDrive = -1;
+            if (driveHandling[activeDrive] > 0)
+            {
+                imposedDrive = driveSeries_[driveHandling[activeDrive]-1](index);
+            }
+            return imposedDrive;
+        }
+
         //- Read perforations
         void readPerforations();
+
+        //- Read imposed well rate/BHP
+        void readImposedDrives();
 
         //- Const access to next timeStep to catch rate changes
         const scalar& nextTimeStep() const {
@@ -242,8 +294,6 @@ public:
         //- Cleanup after correcting well coeffs
         virtual void postCorrect() = 0;
 
-        //- Return target flowRate
-        virtual const dimensionedScalar targetRate() const = 0;
 
 };
 
