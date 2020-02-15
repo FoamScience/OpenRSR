@@ -1,5 +1,5 @@
 EXE_INC = \
-    --std=c++11 \
+    --std=c++11 -ftest-coverage -fprofile-arcs \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I../include \
     -I../petroleumTransportModels/lnInclude
