@@ -53,7 +53,7 @@ wellBase<KType, nPhases>::wellBase
             IOobject::NO_WRITE
         )
     ),
-    driveHandling(nPhases+1),
+    driveHandling(nPhases+int(cmpFactorial(nPhases)/2)+1),
     name_(name),
     wellProperties_(wellProperties),
     mesh_(mesh),
@@ -104,6 +104,19 @@ wellBase<KType, nPhases>::wellBase
     {
         driveHandling.insert(phases_[phi]+".rate", 0);
     }
+    List<wordList> phaseCombs = findBinaryCombinations<word>(phases_);
+    forAll(phaseCombs, pc)
+    {
+        driveHandling.insert
+        (
+            phaseCombs[pc][0]+word(".")+phaseCombs[pc][1]+word(".ratio"), 0
+        );
+        driveHandling.insert
+        (
+            phaseCombs[pc][1]+word(".")+phaseCombs[pc][0]+word(".ratio"), 0
+        );
+    }
+    driveHandling.insert("totalRate", 0);
 }
 
 

@@ -14,7 +14,6 @@ check_errs()
 
 # Source FE4
 source /opt/foam/foam-extend-4.0/etc/bashrc
-pip install --user cpp-coveralls
 set -ev
 
 # Get to the directory, compile libraries (Opt mode)
@@ -32,4 +31,3 @@ for t in $tests; do
     ./*Test
     popd > /dev/null
 done
-coveralls --gcov-options '\-lp'

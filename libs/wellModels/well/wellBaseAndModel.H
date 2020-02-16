@@ -58,6 +58,7 @@ SourceFiles
 #include "cellSet.H"
 #include "topoSetSource.H"
 #include "interpolationTable.H"
+#include "wellCompileCalculations.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -266,6 +267,13 @@ public:
         //- Retrieve imposed drive value from series
         scalar driveAtTime(word activeDrive, scalar index) const
         {
+            if (!driveHandling.found(activeDrive))
+                FatalErrorIn(__PRETTY_FUNCTION__)
+                    << "Didn't expect drive: " << activeDrive
+                    << " at all for well: " << name_
+                    << ".\n List of legitimate well drives include:"
+                    << driveHandling.toc() << exit(FatalError);
+
             scalar imposedDrive = -1;
             if (driveHandling[activeDrive] > 0)
             {
