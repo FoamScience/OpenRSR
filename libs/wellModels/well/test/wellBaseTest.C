@@ -58,9 +58,13 @@ struct FunctorTestDerived : public wellModel
             const fvMesh& mesh
             ): wellModel(name, wellProperties, mesh) {}
     virtual void correct(){}
-    virtual void operator()(word& w) const
+    virtual void operator()(const word& wellName) const
     {
-        w += "TestFunctor";
+        if (foundObject<base2IsoWell>(wellName))
+        {
+            const base2IsoWell& well = lookupObject<base2IsoWell>(wellName);
+            Info << "Got const well ref: " << well.cellIDs() << endl;
+        }
     }
 };
 #include "addToRunTimeSelectionTable.H"
@@ -86,8 +90,8 @@ public:
     ): wellBase<Iso,2>(name, wellProperties, mesh, corrector){}
     virtual ~childWell(){}
     virtual bool writeData(Ostream&) const {}
-    virtual void preCorrect(){}
-    virtual void postCorrect(){}
+    virtual void preCorrect(){ Info << "Executing preCorrect"  << endl; }
+    virtual void postCorrect(){ Info << "Executing postCorrect"  << endl; }
 };
 defineTypeNameAndDebug(childWell, 0);
 addToRunTimeSelectionTable(base2IsoWell, childWell, dictionary);
@@ -160,7 +164,7 @@ SCENARIO("Integration between wellBase class templates and wellModel class")
             {
                 CHECK(aWell->iPhase() == word("noPhase"));
                 aWell->correct();
-                REQUIRE(aWell->iPhase() == word("noPhaseTestFunctor"));
+                //REQUIRE(aWell->iPhase() == word("noPhaseTestFunctor"));
             }
         }
 

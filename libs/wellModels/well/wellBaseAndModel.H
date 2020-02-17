@@ -37,7 +37,9 @@ Class
     Foam::wellModel
 
 Description
-    An abstract class for well models.
+    An abstract class for well models based on the assumption that
+    well bottom hole pressure is a function of (main) pressure
+    and some flowrate variable (Total, or phase-specific).
 
 SourceFiles
     wellBase.C
@@ -76,6 +78,9 @@ template<class KType, int nPhases>
 class wellBase
     : public regIOobject
 {
+
+// Declaration of Friend Classes
+friend class wellModel;
 
 public:
 
@@ -130,7 +135,8 @@ protected:
         //- Phase names list
         wordList phases_;
 
-        //- Well source
+        //- Well source coeffs as a function of pressure
+        //  (Explicit and implicit parts)
         List<VectorN<scalar, 2*nPhases> > source_;
 
         //- Well total volume
@@ -302,10 +308,10 @@ public:
         //- Cleanup after correcting well coeffs
         virtual void postCorrect() = 0;
 
-
 };
 
 class wellModel
+: public objectRegistry
 {
 
 protected:
@@ -323,6 +329,9 @@ protected:
 
         //- Const ref to pressure field
         const volScalarField& p_;
+
+        //- Sources matrix
+        fvScalarMatrix source_;
 
 public:
 
@@ -376,15 +385,27 @@ public:
             return name_;
         }
 
-        //- Return Well dict entry
+        //- Return Wells dict
         const dictionary& dict() const {
             return wellProperties_;
         }
 
-        // Correct well rates
+        //- Return the object registry
+        const objectRegistry& thisDb() const
+        {
+            return *this;
+        }
+
+        //- Return global well source matrix
+        const fvScalarMatrix& source() const {
+            return source_;
+        }
+
+        //- Correct well rates
         virtual void correct() = 0;
 
-        virtual void operator()(word& w) const = 0;
+        //- Virtual Functor operator
+        virtual void operator()(const word& wellName) const = 0;
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

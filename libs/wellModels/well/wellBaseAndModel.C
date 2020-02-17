@@ -48,7 +48,7 @@ wellBase<KType, nPhases>::wellBase
         (
             name,
             mesh.time().timeName(),
-            mesh,
+            corrector,
             IOobject::READ_IF_PRESENT,
             IOobject::NO_WRITE
         )
@@ -182,9 +182,9 @@ word wellBase<KType, nPhases>::operationHandlingToWord
 template<class KType, int nPhases>
 void Foam::wellBase<KType, nPhases>::correct()
 {
-    // preCorrect();
-    corrector_(iPhase_);
-    // postCorrect();
+    preCorrect();
+    corrector_(name_);
+    postCorrect();
 }
 
 template<class KType, int nPhases>
@@ -316,10 +316,19 @@ Foam::wellModel::wellModel
     const fvMesh& mesh
 )
 :
+    objectRegistry
+    (
+        IOobject
+        (
+            name,
+            mesh.time()
+        )
+    ),
     name_(name),
     wellProperties_(wellProperties),
     mesh_(mesh),
-    p_(mesh.lookupObject<volScalarField>("p"))
+    p_(mesh.lookupObject<volScalarField>("p")),
+    source_(p_, dimless/dimTime)
 {
 }
 
