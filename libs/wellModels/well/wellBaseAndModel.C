@@ -28,18 +28,15 @@ License
 namespace Foam 
 {
 
-defineTypeNameAndDebug(wellModel, 0);
-defineRunTimeSelectionTable(wellModel, dictionary);
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class KType, int nPhases>
 wellBase<KType, nPhases>::wellBase
 (
     const word& name,
-    const dictionary& wellProperties,
+    const dictionary& wellDict,
     const fvMesh& mesh,
-    const wellModel& corrector
+    const wellModelBase<KType, nPhases>& corrector
 )
     :
     regIOobject
@@ -55,36 +52,40 @@ wellBase<KType, nPhases>::wellBase
     ),
     driveHandling(nPhases+int(cmpFactorial(nPhases)/2)+1),
     name_(name),
-    wellProperties_(wellProperties),
+    wellDict_(wellDict),
     mesh_(mesh),
     corrector_(corrector),
-    wellDict_(wellProperties.subDict(name)),
     operation_
     (
-        wordToOperationHandling(wellDict_.lookup("operationMode"))
+        wordToOperationHandling(wellDict.lookup("operationMode"))
+    ),
+    orientation_
+    (
+        wellDict.lookupOrDefault<word>("orientation", "vertical")
     ),
     iPhase_
     (
         (operation_ == INJE)
-        ? wellDict_.lookupOrDefault<word>("injectionPhase","water")
+        ? wellDict.lookupOrDefault<word>("injectionPhase","water")
         : "noPhase"
     ),
     radius_
     (
-        dimensionedScalar(name_+".radius", dimLength, readScalar(wellDict_.lookup("radius")))
+        dimensionedScalar(name+".radius", dimLength, readScalar(wellDict.lookup("radius")))
     ),
+    eqRadius_(0.0),
     perfos_(),
     wellSet_(mesh, name+"Set", 0),
     phases_
     (
-        wellDict_.found("phases") 
-        ? wellDict_.lookup("phases")
+        wellDict.found("phases")
+        ? wellDict.lookup("phases")
         : mesh.objectRegistry::names<phase>()
     ),
     source_(),
     tV_(0.0),
-    bhp_(name_+".bhp", dimPressure, 0.0),
-    tRate_(name_+".targetRate", dimVolume/dimTime, 0.0),
+    bhp_(name+".bhp", dimPressure, 0.0),
+    tRate_(name+".targetRate", dimVolume/dimTime, 0.0),
     driveSeries_(),
     timeForDt_(VGREAT)
 {
@@ -127,13 +128,13 @@ autoPtr<wellBase<KType, nPhases> >
 wellBase<KType, nPhases>::New
 (
     const word& name,
-    const dictionary& wellProperties,
+    const dictionary& wellDict,
     const fvMesh& mesh,
-    const wellModel& corrector
+    const wellModelBase<KType, nPhases>& corrector
 )
 {
     // Get the name from the dictionary.
-    const word modelType(wellProperties.subDict(name).lookup("wellType"));
+    const word modelType(wellDict.lookup("wellType"));
 
     // Get the RTS Table via the global object.
     typename dictionaryConstructorTable::iterator cstrIter =
@@ -151,7 +152,7 @@ wellBase<KType, nPhases>::New
     }
 
     return autoPtr< wellBase<KType, nPhases> > 
-        (cstrIter()(name, wellProperties, mesh, corrector));
+        (cstrIter()(name, wellDict, mesh, corrector));
 }
 
 // * * * * * * * * * * * * * Public Member Functions * * * * * * * * * * * * * //
@@ -308,8 +309,8 @@ void wellBase<KType, nPhases>::readImposedDrives()
 
 
 
-
-Foam::wellModel::wellModel
+template<class KType, int nPhases>
+Foam::wellModelBase<KType, nPhases>::wellModelBase
 (
     const word& name,
     const dictionary& wellProperties,
@@ -328,11 +329,15 @@ Foam::wellModel::wellModel
     wellProperties_(wellProperties),
     mesh_(mesh),
     p_(mesh.lookupObject<volScalarField>("p")),
+    wells_(),
     source_(p_, dimless/dimTime)
 {
+    readWells();
 }
 
-Foam::autoPtr<Foam::wellModel> Foam::wellModel::New
+template<class KType, int nPhases>
+Foam::autoPtr<Foam::wellModelBase<KType, nPhases> > 
+Foam::wellModelBase<KType, nPhases>::New
 (
     const word& name,
     const dictionary& wellProperties,
@@ -343,18 +348,12 @@ Foam::autoPtr<Foam::wellModel> Foam::wellModel::New
 
     Info<< "Selecting wellModel : " << wellManagement << "\n" << endl;
 
-    dictionaryConstructorTable::iterator cstrIter =
+    typename dictionaryConstructorTable::iterator cstrIter =
       dictionaryConstructorTablePtr_->find(wellManagement);
 
     if (cstrIter == dictionaryConstructorTablePtr_->end())
       {
-          FatalErrorIn("Foam::autoPtr<Foam::wellModel> Foam::wellModel::New\
-                        (\
-                            const word& name,\
-                            const dictionary& wellProperties,\
-                            const fvMesh& mesh,\
-                            const volScalarfield& p\
-                        )" )
+          FatalErrorIn(__PRETTY_FUNCTION__)
               << "Unknown wellManagement model "
               << wellManagement << nl << nl
               << "Valid wellManaegement models are : " << endl
@@ -362,11 +361,42 @@ Foam::autoPtr<Foam::wellModel> Foam::wellModel::New
               << exit(FatalError);
       }
 
-    return autoPtr<wellModel>
+    return autoPtr<wellModelBase<KType, nPhases> >
       (cstrIter()(name, wellProperties, mesh));
 }
 
 
+template<class KType, int nPhases>
+void Foam::wellModelBase<KType, nPhases>::readWells()
+{
+    Info << "Reading Wells" << endl;
+
+    // Store well entries
+    const PtrList<entry> wellsInfo(
+        wellProperties_.lookup("wells")
+    );
+
+    // Reshape wells list
+    wells_.setSize(wellsInfo.size());
+
+    // Construct well ptrs
+    forAll(wells_, welli)
+    {
+        const entry& wellInfo = wellsInfo[welli];
+
+        if(!wellInfo.isDict())
+        {
+            FatalErrorIn(__PRETTY_FUNCTION__)
+                << "Entry " << wellInfo << " in wells section is not a"
+                << " valid dictionary." << exit(FatalIOError);
+        }
+
+        wells_.set(
+            welli,
+            wellBase<KType, nPhases>::New(wellInfo.keyword(), wellInfo.dict(), mesh_, *this)
+        );
+    }
+}
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

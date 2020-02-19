@@ -32,10 +32,12 @@ License
 
 namespace Foam
 {
-    // Base class for 2-phases Isotropic wells
-    makeRelativePermeabilityModelBase(Iso, 2)
-    // Base class for 2-phases Anisotropic wells
-    makeRelativePermeabilityModelBase(Aniso, 2)
+    // Base class for 2-phases Isotropic and anisotropic wells
+    makeWellBase(Iso, 2)
+    makeWellBase(Aniso, 2)
+
+    makeWellModelBase(Iso, 2)
+    makeWellModelBase(Aniso, 2)
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

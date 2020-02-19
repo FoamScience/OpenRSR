@@ -34,7 +34,7 @@ Description
     An abstract class template for well objects.
 
 Class
-    Foam::wellModel
+    Foam::wellModelBase
 
 Description
     An abstract class for well models based on the assumption that
@@ -71,16 +71,13 @@ namespace Foam
                          Class wellBase Declaration
 \*---------------------------------------------------------------------------*/
 
-class wellModel;
+template<class KType,int nPhases> class wellModelBase;
 class phase;
 
 template<class KType, int nPhases>
 class wellBase
     : public regIOobject
 {
-
-// Declaration of Friend Classes
-friend class wellModel;
 
 public:
 
@@ -105,26 +102,29 @@ protected:
         //- Well Name
         word name_;
 
-        //- Const-ref to global web configs
-        const dictionary& wellProperties_;
+        //- Well configs dict
+        const dictionary& wellDict_;
 
         //- Const-ref to mesh
         const fvMesh& mesh_;
 
         //- Const-ref to the model driving this well
-        const wellModel& corrector_;
-
-        //- Well dictionary
-        dictionary wellDict_;
+        const wellModelBase<KType, nPhases>& corrector_;
 
         //- Well operation mode: injection - production
         operationHandling operation_;
 
+        //- Well Orientation
+        word orientation_;
+
         //- Injection phase name
         word iPhase_;
 
-        //- well radius
+        //- Well radius
         dimensionedScalar radius_;
+
+        //- Well equivalent radius
+        scalar eqRadius_;
 
         //- Well Perforations
         PtrList<topoSetSource> perfos_;
@@ -179,17 +179,17 @@ public:
     TypeName("wellBase");
 
     // Declare run-time constructor selection table
-    declareRunTimeSelectionTable ( 	  	
+    declareRunTimeSelectionTable (
         autoPtr,
 		wellBase,
 		dictionary,
 		(
             const word& name,
-            const dictionary& wellProperties,
+            const dictionary& wellDict,
             const fvMesh& mesh,
-            const wellModel& corrector
+            const wellModelBase<KType, nPhases>& corrector
         ),
-        (name, wellProperties, mesh, corrector)
+        (name, wellDict, mesh, corrector)
 	); 		
 
     // Constructors
@@ -198,9 +198,9 @@ public:
         wellBase
         (
             const word& name,
-            const dictionary& wellProperties,
+            const dictionary& wellDict,
             const fvMesh& mesh,
-            const wellModel& corrector
+            const wellModelBase<KType, nPhases>& corrector
         );
 
     // Selectors
@@ -209,9 +209,9 @@ public:
         static autoPtr<wellBase<KType, nPhases> > New
         (
             const word& name,
-            const dictionary& wellProperties,
+            const dictionary& wellDict,
             const fvMesh& mesh,
-            const wellModel& corrector
+            const wellModelBase<KType, nPhases>& corrector
         );
 
     //- Destructor
@@ -270,6 +270,18 @@ public:
             return tRate_;
         }
 
+        //- Return well equivalent radius
+        const scalar& equivalentRadius() const
+        {
+            return eqRadius_;
+        }
+
+        //- Set well equivalent radius
+        inline void setEquivalentRadius(const scalar& newRadius)
+        {
+            eqRadius_ = newRadius;
+        }
+
         //- Retrieve imposed drive value from series
         scalar driveAtTime(word activeDrive, scalar index) const
         {
@@ -310,7 +322,8 @@ public:
 
 };
 
-class wellModel
+template<class KType, int nPhases>
+class wellModelBase
 : public objectRegistry
 {
 
@@ -319,10 +332,10 @@ protected:
     // Protected data
 
         //- Model Name
-        word name_;
+        const word& name_;
 
         //- Well dictionary entry
-        dictionary wellProperties_;
+        const dictionary& wellProperties_;
 
         //- Const ref to mesh
         const fvMesh& mesh_;
@@ -330,19 +343,27 @@ protected:
         //- Const ref to pressure field
         const volScalarField& p_;
 
+        //- Wells List
+        PtrList<wellBase<KType, nPhases> > wells_;
+
         //- Sources matrix
         fvScalarMatrix source_;
+
+    // Private Member Functions
+
+        //- Read wells from list
+        void readWells();
 
 public:
 
     //- Runtime type information
-    TypeName("wellModel");
+    TypeName("wellBaseModel");
 
     // Declare run-time constructor selection table
     declareRunTimeSelectionTable
     (
         autoPtr,
-        wellModel,
+        wellModelBase,
         dictionary,
         (
             const word& name,
@@ -355,7 +376,7 @@ public:
     // Selectors
 
         //- Return a reference to the well control model
-        static autoPtr<wellModel> New
+        static autoPtr<wellModelBase> New
         (
             const word& name,
             const dictionary& wellProperties,
@@ -366,7 +387,7 @@ public:
     // Constructors
 
         //- Construct from components
-        wellModel
+        wellModelBase
         (
             const word& name,
             const dictionary& wellProperties,
@@ -375,7 +396,7 @@ public:
 
 
     //- Destructor
-    virtual ~wellModel() {}
+    virtual ~wellModelBase() {}
 
 
     // Member Functions
@@ -396,6 +417,11 @@ public:
             return *this;
         }
 
+        //- Return wells List
+        const PtrList<wellBase<KType, nPhases> >& wells() const {
+            return wells_;
+        }
+
         //- Return global well source matrix
         const fvScalarMatrix& source() const {
             return source_;
@@ -411,10 +437,15 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 // Macro for RTS-enabled class initiated from this class template
-#define makeRelativePermeabilityModelBase(KType, nPhases)                      \
+#define makeWellBase(KType, nPhases)                      \
                                                                                \
 defineNamedTemplateTypeNameAndDebug(base##nPhases####KType##Well, 0);          \
 defineTemplateRunTimeSelectionTable(base##nPhases####KType##Well, dictionary); \
+
+#define makeWellModelBase(KType, nPhases)                      \
+                                                                               \
+defineNamedTemplateTypeNameAndDebug(base##nPhases####KType##WellModel, 0);          \
+defineTemplateRunTimeSelectionTable(base##nPhases####KType##WellModel, dictionary); \
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

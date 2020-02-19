@@ -15,42 +15,58 @@ FoamFile
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-wellModel FunctorTestDerived;
+wellModel wellModelDerived;
 
-aWell
-{
-    wellType childWell;
-    operationMode production;
-    radius 1;
-
-    perforations
-    (
-        labelToCell
-        {
-            value  (0 1);
-        }
-
-        labelToCell
-        {
-            value  (5 6);
-        }
-    );
-
-    imposedDrives
-    (
-        //BHP
-        //{
-        //    fileName "bhp.dat";
-        //    outOfBounds warn;
-        //}
-
-        water.rate
-        {
-            fileName "wRate.dat";
-            outOfBounds warn;
-        }
-    );
-}
+wells
+(
+    aWell
+    {
+        wellType childWell;
+        operationMode production;
+        radius 1;
+        perforations
+        (
+            labelToCell { value  (0 1); }
+            labelToCell { value  (5 6); }
+        );
+        imposedDrives
+        (
+            //BHP
+            //{
+            //    fileName "bhp.dat";
+            //    outOfBounds warn;
+            //}
+            water.rate
+            {
+                fileName "wRate.dat";
+                outOfBounds warn;
+            }
+        );
+    }
+    anotherWell
+    {
+        wellType childWell;
+        operationMode production;
+        radius 1;
+        perforations
+        (
+            labelToCell { value  (2); }
+        );
+        imposedDrives
+        (
+            //BHP
+            //{
+            //    fileName "bhp.dat";
+            //    outOfBounds warn;
+            //}
+            oil.rate
+            {
+                fileName "wRate.dat";
+                outOfBounds exit;
+            }
+        );
+    }
+);
 
 
 // ************************************************************************* //
