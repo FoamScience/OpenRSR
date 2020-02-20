@@ -7,6 +7,8 @@
 
 # Open Reservoir Simulation Research tool
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/065db4c85ffa407ab857b6e86abdbe9e)](https://app.codacy.com/manual/elwardifadeli/OpenRSR?utm_source=github.com&utm_medium=referral&utm_content=FoamScience/OpenRSR&utm_campaign=Badge_Grade_Dashboard)
+
 The toolbox makes use of latest GPLed code in Foam-Extend repositories to build capable
 (but not yet efficient enough) solvers for BlackOil equations in isotherm porous media.
 It's thanks to the OpenFOAM developpers, `henrus`, `bgscaid` and the other 
