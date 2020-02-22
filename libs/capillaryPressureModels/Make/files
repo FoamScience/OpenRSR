@@ -1,3 +1,5 @@
 capillaryPressureModel/capillaryPressureModelBases.C
 
+twoPhaseModels/none/none2.C
+
 LIB = $(FOAM_USER_LIBBIN)/libcapillaryPressureModels

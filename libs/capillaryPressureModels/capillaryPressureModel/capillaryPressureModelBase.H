@@ -172,6 +172,12 @@ public:
 
         //- Return canonical phase name
         virtual const word canonicalPhase() const = 0;
+
+        //- Write Data to Ostream
+        virtual bool writeData(Ostream&) const
+        {
+            notImplemented(__PRETTY_FUNCTION__);
+        };
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

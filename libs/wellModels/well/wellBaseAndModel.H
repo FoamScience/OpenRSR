@@ -297,7 +297,7 @@ public:
         }
 
         //- Check if a drive is active
-        bool isActiveDrive(const word& drive)
+        bool isActiveDrive(const word& drive) const
         {
             if (!driveHandling.found(drive))
                 FatalErrorIn(__PRETTY_FUNCTION__)

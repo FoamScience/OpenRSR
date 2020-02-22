@@ -42,6 +42,21 @@ volScalarField p
     dimensionedScalar("p", dimPressure, 0.0)
 );
 
+// The permeability field
+volScalarField K
+(
+    IOobject
+    (
+        "K",
+        runTime.timeName(),
+        mesh,
+        IOobject::NO_READ,
+        IOobject::NO_WRITE
+    ),
+    mesh,
+    dimensionedScalar("K", dimArea, 1e-12)
+);
+
 // Two phases to work with
 incompressibleFluid oil(word("oil"), transportProperties, mesh);
 incompressibleFluid water(word("water"), transportProperties, mesh);

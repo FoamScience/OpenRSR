@@ -89,16 +89,16 @@ SCENARIO("Construction of well objects")
             }
         }
 
-        WHEN("Pass a wellModel child to wellBase's constructor, and run wellBase.correct()")
-        {
-            autoPtr<base2IsoWellModel>    wModel =
-                base2IsoWellModel::New("derivedWellModel", wellProperties, mesh);
-            THEN("wellBase Members must be updated properly")
-            {
-                wModel->wells()[0].correct();
-                REQUIRE(wModel->wells()[0].equivalentRadius() == 15);
-            }
-        }
+        //WHEN("Pass a wellModel child to wellBase's constructor, and run wellBase.correct()")
+        //{
+        //    autoPtr<base2IsoWellModel>    wModel =
+        //        base2IsoWellModel::New("derivedWellModel", wellProperties, mesh);
+        //    THEN("wellBase Members must be updated properly")
+        //    {
+        //        wModel->wells()[0].correct();
+        //        REQUIRE(wModel->wells()[0].equivalentRadius() == 15);
+        //    }
+        //}
     }
 }
 

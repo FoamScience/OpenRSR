@@ -8,7 +8,7 @@ check_errs()
   if [ "${1}" -ne "0" ]; then
     echo "ERROR # ${1} : ${2}"
     # as a bonus, make our script exit with the right error code.
-    exit ${1}
+    exit "${1}"
   fi
 }
 
@@ -20,12 +20,12 @@ set -ev
 cd /home/foam/OpenRSR; ./Allwmake
 
 # A full test of all library classes
-tests=`find /home/foam/OpenRSR -iname "test" -type d`
+tests=$(find /home/foam/OpenRSR -iname "test" -type d)
 for t in $tests; do
     echo "Testing $t:"
     echo "------------------------------------------"
     pushd . > /dev/null
-    cd $t
+    cd "$t"
     wmake
     check_errs $? "Test didn't compile ..."
     ./*Test

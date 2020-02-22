@@ -15,11 +15,11 @@ struct wellModelDerived : public base2IsoWellModel
         {
             const base2IsoWell& well = lookupObject<base2IsoWell>(wellName);
             // Operate on well data members
-            well.setEquivalentRadius(15);
+            //well.setEquivalentRadius(15);
         }
     }
 };
 
 #include "addToRunTimeSelectionTable.H"
 defineTypeNameAndDebug(wellModelDerived, 0);
-addToRunTimeSelectionTable(base2IsoWellModel, wellModelDerived, dictionary);
+addToRunTimeSelectionTable(base2IsoWellModel, wellModelDerived, Dictionary);
