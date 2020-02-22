@@ -4,6 +4,7 @@
 > [this Bitbucket repo](https://bitbucket.org/FoamScience/reservoir-simulator/src) 
 > although the code is messy.
 
+[![CodeFactor](https://www.codefactor.io/repository/github/foamscience/openrsr/badge/dev)](https://www.codefactor.io/repository/github/foamscience/openrsr/overview/dev) [TravisBuild][https://travis-ci.com/FoamScience/OpenRSR.svg?branch=dev] [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fba58294886e494fa636370dd24cc79e)](https://www.codacy.com/manual/elwardifadeli/OpenRSR?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=FoamScience/OpenRSR&amp;utm_campaign=Badge_Grade)
 
 # Open Reservoir Simulation Research tool
 
