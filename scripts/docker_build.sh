@@ -47,4 +47,3 @@ lcov --remove  lcov.info "*catch2*" -o lcov.info
 #genhtml lcov.info --output-directory coverage-output
 
 # Send final report to Codacy
-bash <(curl -Ls https://coverage.codacy.com/get.sh)

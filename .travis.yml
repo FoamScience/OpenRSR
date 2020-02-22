@@ -4,11 +4,17 @@ addons:
   apt:
     packages:
       - docker-ce
+      - curl
+      - jq
+      - lcov
 services:
     - docker
 
 os: linux
-language: cpp
+language:
+  - cpp
+  - java
 
 script:
   - docker run --rm -u root -v $PWD:/home/foam/OpenRSR foamscience/openrsr /bin/bash -c "/home/foam/OpenRSR/scripts/docker_build.sh"
+  - bash <(curl -Ls https://coverage.codacy.com/get.sh)
