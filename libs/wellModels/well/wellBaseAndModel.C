@@ -137,24 +137,25 @@ wellBase<KType, nPhases>::New
 )
 {
     // Get the name from the dictionary.
-    word modelType = wellDict.lookup("orientation");
+    const word orientation = wellDict.lookup("orientation");
+    word permeabilityType;
     if (mesh.objectRegistry::foundObject<Iso>("K"))
     {
-        modelType = modelType + "IsoWell";
+        permeabilityType = "IsoWell";
     } else {
-        modelType = modelType + "AnisoWell";
+        permeabilityType = "AnisoWell";
     }
+    const word wellType = orientation + permeabilityType;
 
     // Get the RTS Table via the global object.
     typename dictionaryConstructorTable::iterator cstrIter =
-        dictionaryConstructorTablePtr_->find(name);
+        dictionaryConstructorTablePtr_->find(wellType);
     // If the constructor pointer is not found in the table.
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
-        FatalErrorIn (
-            "wellBase::New(const dictionary&)"
-        )   << "Unknown well type "
-            << modelType << nl << nl
+        FatalErrorIn (__PRETTY_FUNCTION__)
+            << "Unknown well type "
+            << wellType << nl << nl
             << "Valid wells are : " << endl
             << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
@@ -340,15 +341,19 @@ Foam::wellModelBase<KType, nPhases>::wellModelBase
     p_(mesh.lookupObject<volScalarField>("p")),
     K_(mesh.lookupObject<KType>("K")),
     wells_(),
-    source_(2),
+    source_(nPhases),
     g_
     (
         mesh.objectRegistry::lookupObject<uniformDimensionedVectorField>("g")
     )
 {
-    forAll(source_, si)
+    // Infere phase names
+    const wordList& phaseNames = mesh.objectRegistry::names<phase>();
+
+    // Populate source hash table
+    forAll(phaseNames, pn)
     {
-        source_[si] = fvScalarMatrix(p_, dimless/dimTime/dimPressure);
+        source_.insert(phaseNames[pn], fvScalarMatrix(p_, dimless/dimTime/dimPressure));
     }
 
     // Start By Creating well objects

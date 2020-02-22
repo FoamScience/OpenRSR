@@ -103,16 +103,16 @@ protected:
     // Private Member Functions
 
         //- Calculate FractionalFlow In well cells
-        scalarList calculateFractionalFlow(const wellBase<KType, 2>& well);
+        scalarList calculateFractionalFlow(const wellBase<KType, 2>& well) const;
 
         //- Estimate Well Cell sizes
-        List<vector> estimateCellSizes(const wellBase<KType, 2>& well);
+        List<vector> estimateCellSizes(const wellBase<KType, 2>& well) const;
 
         //- Calculate Well Equivalent Radius
-        scalarList estimateEquivRadius(const wellBase<KType, 2>& well);
+        scalarList estimateEquivRadius(const wellBase<KType, 2>& well) const;
 
         //- Calculate Well Productivity Index
-        scalarList calculateWellPI(const wellBase<KType, 2>& well);
+        scalarList calculateWellPI(const wellBase<KType, 2>& well) const;
 
 public:
 

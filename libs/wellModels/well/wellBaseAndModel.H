@@ -373,7 +373,7 @@ protected:
         PtrList<wellBase<KType, nPhases> > wells_;
 
         //- Sources matrices
-        PtrList<fvScalarMatrix> source_;
+        HashTable<fvScalarMatrix> source_;
 
         //- Ref to Gravitational field
         const uniformDimensionedVectorField& g_;
@@ -452,8 +452,8 @@ public:
         }
 
         //- Return phase well source matrix
-        const fvScalarMatrix& source(int phaseIndex) const {
-            return source_[phaseIndex];
+        const fvScalarMatrix& source(const word& phaseName) const {
+            return source_[phaseName];
         }
 
         //- Return a ref to model gracitational field

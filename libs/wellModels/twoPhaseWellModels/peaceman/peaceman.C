@@ -91,7 +91,7 @@ template<class KType>
 scalarList peaceman<KType>::calculateFractionalFlow
 (
     const wellBase<KType, 2>& well
-)
+) const
 {
     //  Where Qi = -(K kri A/mu)*grad(p)
     // This ignores the effect of Pc on fractional flow for now
@@ -113,7 +113,7 @@ template<class KType>
 List<vector> peaceman<KType>::estimateCellSizes
 (
     const wellBase<KType, 2>& well
-)
+) const
 {
     List<vector> h(well.cellIDs().size());
     // First estimate cell sizes
@@ -140,7 +140,7 @@ template<class KType>
 scalarList peaceman<KType>::estimateEquivRadius
 (
     const wellBase<KType, 2>& well
-)
+) const
 {
     notImplemented(__PRETTY_FUNCTION__);
 }
@@ -149,7 +149,7 @@ template<>
 scalarList peaceman<Iso>::estimateEquivRadius
 (
     const wellBase<Iso, 2>& well
-)
+) const
 {
     // Isotropic media ---> Re depends only on geometry
     scalarList re(well.cellIDs().size());
@@ -174,7 +174,7 @@ template<class KType>
 scalarList peaceman<KType>::calculateWellPI
 (
     const Foam::wellBase<KType, 2>& well
-)
+) const
 {
     notImplemented(__PRETTY_FUNCTION__);
 }
@@ -184,7 +184,7 @@ template<>
 scalarList peaceman<Iso>::calculateWellPI
 (
     const Foam::wellBase<Iso, 2>& well
-)
+) const
 {
     List<vector> h = estimateCellSizes(well);
     scalarList re = estimateEquivRadius(well);
@@ -206,6 +206,11 @@ void peaceman<KType>::correct()
 {
     // Boundary conditions are completely ignored for now
     dimensionedScalar dzero("canIm", dimless/dimTime/dimPressure, 0.0);
+    const word& canPhase = krModel_.canonicalPhase();
+    const word& nonCanPhase = 
+            (krModel_.phaseNames()[1] == krModel_.canonicalPhase() )
+            ? krModel_.phaseNames()[0]
+            : krModel_.phaseNames()[1];
     volScalarField canIm
     (
         IOobject
@@ -276,8 +281,8 @@ void peaceman<KType>::correct()
         }
     }
 
-    this->source_[0] = fvm::Sp(canIm, this->p_) + fvm::Su(canEx, this->p_);
-    this->source_[1] = fvm::Sp(ncaIm, this->p_) + fvm::Su(ncaEx, this->p_);
+    this->source_[canPhase] = fvm::Sp(canIm, this->p_) + fvm::Su(canEx, this->p_);
+    this->source_[nonCanPhase] = fvm::Sp(ncaIm, this->p_) + fvm::Su(ncaEx, this->p_);
 }
 
 // * * * * * * * * * * * * * * * Public Operators * * * * * * * * * * * * * * * //
@@ -285,11 +290,11 @@ void peaceman<KType>::correct()
 template<class KType>
 void peaceman<KType>::operator()(const word& wellName) const
 {
-//    // Get const-ref to requested well
-//    const wellBase<KType, 2>& well = 
-//        objectRegistry::lookupObject<wellBase<KType,2> >(wellName);
-//    // Update Well Productivity Index
-//    scalarList pi = estimateWellPI(well);
+    // Get const-ref to requested well
+    const wellBase<KType, 2>& well = 
+        objectRegistry::lookupObject<wellBase<KType,2> >(wellName);
+    // Update Well Productivity Index
+    scalarList pi = calculateWellPI(well);
 //
 //    // Setup well source matrix
 //    // Thats finding coeffs where:

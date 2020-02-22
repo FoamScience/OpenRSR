@@ -33,12 +33,12 @@ License
 
 namespace Foam
 {
-    namespace twoPhaseWellModels
-    {
+    //namespace twoPhaseWellModels
+    //{
     // Peaceman methods as two-phase well model
     makeWellModelDerived(Peaceman, Iso)
     //makeWellModelDerived(Iso, 2)
-    }
+    //}
 
 };
 

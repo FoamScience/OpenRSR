@@ -57,6 +57,9 @@ volScalarField K
     dimensionedScalar("K", dimArea, 1e-12)
 );
 
+// Gravitation field
+#include "readGravitationalAcceleration.H"
+
 // Two phases to work with
 incompressibleFluid oil(word("oil"), transportProperties, mesh);
 incompressibleFluid water(word("water"), transportProperties, mesh);

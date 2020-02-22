@@ -21,7 +21,7 @@ wells
 (
     aWell
     {
-        wellType childWell;
+        orientation   vertical;
         operationMode production;
         radius 1;
         perforations
@@ -45,7 +45,7 @@ wells
     }
     anotherWell
     {
-        wellType childWell;
+        orientation   vertical;
         operationMode production;
         radius 1;
         perforations
