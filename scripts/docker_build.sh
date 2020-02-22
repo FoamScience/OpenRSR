@@ -17,7 +17,7 @@ source /opt/foam/foam-extend-4.0/etc/bashrc
 set -ev
 
 # Install Lcov for coverage reports
-apt install -qq -y lcov curl
+apt install -qq -y lcov curl jq
 
 # Get to the directory, compile libraries (Opt mode)
 cd /home/foam/OpenRSR; ./Allwmake
