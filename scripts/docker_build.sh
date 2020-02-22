@@ -12,7 +12,7 @@ check_errs()
   fi
 }
 
-# Source FE4
+# Source FE4 in debug mode
 source /opt/foam/foam-extend-4.0/etc/bashrc
 set -ev
 
@@ -30,15 +30,14 @@ for t in $tests; do
     echo "------------------------------------------"
     pushd . > /dev/null
     cd "$t"
-    wmake
+    wclean; wmake
     check_errs $? "Test didn't compile ..."
-    wclean; ./*Test
+    ./*Test
     lcov -c --directory Make/linux64GccDPOpt --output-file coverage-test.info
     popd > /dev/null
 done
 
 # Combine all generated reports
-ls Make/linux*
 find . -iname coverage-test.info -exec cat {} >> main-coverage.info +
 
 # Filter coverage results

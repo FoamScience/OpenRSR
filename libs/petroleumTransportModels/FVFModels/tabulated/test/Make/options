@@ -1,5 +1,5 @@
 EXE_INC = \
-    -std=c++11 -g -O0 --coverage \
+    -std=c++11 --coverage -ggdb3 -DFULLDEBUG \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
     -I$(LIB_SRC)/meshTools/lnInclude \
     -I../../../lnInclude \
