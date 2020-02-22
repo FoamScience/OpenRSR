@@ -16,10 +16,14 @@ check_errs()
 source /opt/foam/foam-extend-4.0/etc/bashrc
 set -ev
 
+# Install Lcov for coverage reports
+apt install -qq -y lcov
+
 # Get to the directory, compile libraries (Opt mode)
 cd /home/foam/OpenRSR; ./Allwmake
 
 # A full test of all library classes
+# While generating partial coverage reports
 tests=$(find /home/foam/OpenRSR -iname "test" -type d)
 for t in $tests; do
     echo "Testing $t:"
@@ -28,6 +32,20 @@ for t in $tests; do
     cd "$t"
     wmake
     check_errs $? "Test didn't compile ..."
-    ./*Test
+    wclean; ./*Test
+    lcov -c --directory Make/linux64GccDPOpt --output-file coverage-test.info
     popd > /dev/null
 done
+
+# Combine all generated reports
+ls Make/linux*
+find . -iname coverage-test.info -exec cat {} >> main-coverage.info +
+
+# Filter coverage results
+# We don't care for testing Foam-Extend and Catch code
+lcov --extract  main-coverage.info "/home/foam/OpenRSR/*" -o lcov.info
+lcov --remove  lcov.info "*catch2*" -o lcov.info
+#genhtml lcov.info --output-directory coverage-output
+
+# Send final report to Codacy
+bash <(curl -Ls https://coverage.codacy.com/get.sh)

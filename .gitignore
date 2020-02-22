@@ -5,3 +5,9 @@
 **@*
 **linux64**
 **/lnInclude/**
+**.info
+**.gcno
+**.gcda
+**/coverage-output/**
+*Test
+allTest.sh
