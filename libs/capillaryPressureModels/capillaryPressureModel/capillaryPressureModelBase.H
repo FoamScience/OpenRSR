@@ -63,6 +63,7 @@ using cmptT = typename pcTableReturn<nPhases>::cmptType;
 
 template<int nPhases>
 class capillaryPressureModelBase
+: public regIOobject
 {
 
 protected:

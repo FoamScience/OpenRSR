@@ -49,6 +49,7 @@ SourceFiles
 #ifndef wellBase_H
 #define wellBase_H
 
+#include "phase.H"
 #include "typeInfo.H"
 #include "runTimeSelectionTables.H"
 #include "addToRunTimeSelectionTable.H"
@@ -61,6 +62,7 @@ SourceFiles
 #include "topoSetSource.H"
 #include "interpolationTable.H"
 #include "wellCompileCalculations.H"
+#include "uniformDimensionedFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -123,8 +125,8 @@ protected:
         //- Well radius
         dimensionedScalar radius_;
 
-        //- Well equivalent radius
-        scalar eqRadius_;
+        //- Well skin
+        scalar skin_;
 
         //- Well Perforations
         PtrList<topoSetSource> perfos_;
@@ -270,30 +272,52 @@ public:
             return tRate_;
         }
 
-        //- Return well equivalent radius
-        const scalar& equivalentRadius() const
+        //- Return skin value
+        const scalar& skin() const
         {
-            return eqRadius_;
+            return skin_;
         }
 
-        //- Set well equivalent radius
-        inline void setEquivalentRadius(const scalar& newRadius)
+        //- Return well radius
+        scalar radius() const
         {
-            eqRadius_ = newRadius;
+            return radius_.value();
         }
 
-        //- Retrieve imposed drive value from series
-        scalar driveAtTime(word activeDrive, scalar index) const
+        //- Set well source coeffs
+        void setSource(List<VectorN<scalar,4> >& src)
         {
-            if (!driveHandling.found(activeDrive))
+            source_ = src;
+        }
+
+        //- Return Const-Ref to well Source Matrix
+        const List<VectorN<scalar, 2*nPhases> >& source() const
+        {
+            return source_;
+        }
+
+        //- Check if a drive is active
+        bool isActiveDrive(const word& drive)
+        {
+            if (!driveHandling.found(drive))
                 FatalErrorIn(__PRETTY_FUNCTION__)
-                    << "Didn't expect drive: " << activeDrive
+                    << "Didn't expect drive: " << drive
                     << " at all for well: " << name_
                     << ".\n List of legitimate well drives include:"
                     << driveHandling.toc() << exit(FatalError);
+            if (driveHandling[drive] > 0)
+            {
+                return 1;
+            } else {
+                return 0;
+            }
+        }
 
+        //- Retrieve imposed drive value from series
+        scalar driveAtTime(const word& activeDrive, scalar index) const
+        {
             scalar imposedDrive = -1;
-            if (driveHandling[activeDrive] > 0)
+            if (isActiveDrive(activeDrive))
             {
                 imposedDrive = driveSeries_[driveHandling[activeDrive]-1](index);
             }
@@ -314,12 +338,11 @@ public:
         //- Correct well coeffs
         virtual void correct();
 
-        //- Setup before correcting well coeffs
+        //- Pre-Setup for well correction
         virtual void preCorrect() = 0;
 
-        //- Cleanup after correcting well coeffs
+        //- Post-Cleanup for well correction
         virtual void postCorrect() = 0;
-
 };
 
 template<class KType, int nPhases>
@@ -343,11 +366,17 @@ protected:
         //- Const ref to pressure field
         const volScalarField& p_;
 
+        //- Const ref to absolute permeability
+        const KType& K_;
+
         //- Wells List
         PtrList<wellBase<KType, nPhases> > wells_;
 
-        //- Sources matrix
-        fvScalarMatrix source_;
+        //- Sources matrices
+        PtrList<fvScalarMatrix> source_;
+
+        //- Ref to Gravitational field
+        const uniformDimensionedVectorField& g_;
 
     // Private Member Functions
 
@@ -364,7 +393,7 @@ public:
     (
         autoPtr,
         wellModelBase,
-        dictionary,
+        Dictionary,
         (
             const word& name,
             const dictionary& wellProperties,
@@ -422,9 +451,14 @@ public:
             return wells_;
         }
 
-        //- Return global well source matrix
-        const fvScalarMatrix& source() const {
-            return source_;
+        //- Return phase well source matrix
+        const fvScalarMatrix& source(int phaseIndex) const {
+            return source_[phaseIndex];
+        }
+
+        //- Return a ref to model gracitational field
+        const uniformDimensionedVectorField& g() const {
+            return g_;
         }
 
         //- Correct well rates
@@ -445,7 +479,17 @@ defineTemplateRunTimeSelectionTable(base##nPhases####KType##Well, dictionary); \
 #define makeWellModelBase(KType, nPhases)                      \
                                                                                \
 defineNamedTemplateTypeNameAndDebug(base##nPhases####KType##WellModel, 0);          \
-defineTemplateRunTimeSelectionTable(base##nPhases####KType##WellModel, dictionary); \
+defineTemplateRunTimeSelectionTable(base##nPhases####KType##WellModel, Dictionary); \
+
+#define makeWellModelDerived(Suffix, KType)                      \
+                                                                                \
+defineNamedTemplateTypeNameAndDebug(derived##KType##Suffix, 0);        \
+addToRunTimeSelectionTable                                                      \
+(                                                                               \
+    base2##KType##WellModel,                                              \
+    derived##KType##Suffix,                                            \
+    Dictionary                                                                  \
+);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

@@ -38,6 +38,17 @@ capillaryPressureModelBase<nPhases>::capillaryPressureModelBase
     const fvMesh& mesh
 )
     :
+    regIOobject
+    (
+        IOobject
+        (
+            name,
+            mesh.time().timeName(),
+            mesh,
+            IOobject::NO_READ,
+            IOobject::NO_WRITE
+        )
+    ),
     name_(name),
     transportProperties_(transportProperties),
     mesh_(mesh),

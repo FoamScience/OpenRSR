@@ -61,6 +61,7 @@ namespace Foam
 
 template<int nPhases>
 class relativePermeabilityModelBase
+: public regIOobject
 {
 
 protected:
@@ -138,15 +139,27 @@ public:
         }
 
         //- Return relative permeability component
-        tmp<volScalarField> kr(int phaseIndex)
+        tmp<volScalarField> kr(int phaseIndex) const
         {
             return kr_.component(phaseIndex);
         }
 
+        //- Return relative permeability of cell
+        scalar kr(int phaseIndex, int cellID) const
+        {
+            return kr_[phaseIndex][cellID];
+        }
+
         //- Return relative permeability derivative
-        tmp<volScalarField> dkrdS(int phaseIndex)
+        tmp<volScalarField> dkrdS(int phaseIndex) const
         {
             return dkrdS_.component(phaseIndex);
+        }
+
+        //- Return relative permeability derivative of cell
+        scalar dkrdS(int phaseIndex, int cellID) const
+        {
+            return dkrdS_[phaseIndex][cellID];
         }
 
         //- Return Kr table as a hole (For debugging)
@@ -169,6 +182,12 @@ public:
 
         //- Return canonical phase name
         virtual const word canonicalPhase() const = 0;
+
+        //- Write Data to Ostream
+        virtual bool writeData(Ostream&) const
+        {
+            notImplemented(__PRETTY_FUNCTION__);
+        }
 };
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

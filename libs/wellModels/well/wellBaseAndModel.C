@@ -73,7 +73,10 @@ wellBase<KType, nPhases>::wellBase
     (
         dimensionedScalar(name+".radius", dimLength, readScalar(wellDict.lookup("radius")))
     ),
-    eqRadius_(0.0),
+    skin_
+    (
+        wellDict.lookupOrDefault<scalar>("skin", 0.0)
+    ),
     perfos_(),
     wellSet_(mesh, name+"Set", 0),
     phases_
@@ -134,11 +137,17 @@ wellBase<KType, nPhases>::New
 )
 {
     // Get the name from the dictionary.
-    const word modelType(wellDict.lookup("wellType"));
+    word modelType = wellDict.lookup("orientation");
+    if (mesh.objectRegistry::foundObject<Iso>("K"))
+    {
+        modelType = modelType + "IsoWell";
+    } else {
+        modelType = modelType + "AnisoWell";
+    }
 
     // Get the RTS Table via the global object.
     typename dictionaryConstructorTable::iterator cstrIter =
-        dictionaryConstructorTablePtr_->find(modelType);
+        dictionaryConstructorTablePtr_->find(name);
     // If the constructor pointer is not found in the table.
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
@@ -329,9 +338,20 @@ Foam::wellModelBase<KType, nPhases>::wellModelBase
     wellProperties_(wellProperties),
     mesh_(mesh),
     p_(mesh.lookupObject<volScalarField>("p")),
+    K_(mesh.lookupObject<KType>("K")),
     wells_(),
-    source_(p_, dimless/dimTime)
+    source_(2),
+    g_
+    (
+        mesh.objectRegistry::lookupObject<uniformDimensionedVectorField>("g")
+    )
 {
+    forAll(source_, si)
+    {
+        source_[si] = fvScalarMatrix(p_, dimless/dimTime/dimPressure);
+    }
+
+    // Start By Creating well objects
     readWells();
 }
 
@@ -348,16 +368,16 @@ Foam::wellModelBase<KType, nPhases>::New
 
     Info<< "Selecting wellModel : " << wellManagement << "\n" << endl;
 
-    typename dictionaryConstructorTable::iterator cstrIter =
-      dictionaryConstructorTablePtr_->find(wellManagement);
+    typename DictionaryConstructorTable::iterator cstrIter =
+      DictionaryConstructorTablePtr_->find(wellManagement);
 
-    if (cstrIter == dictionaryConstructorTablePtr_->end())
+    if (cstrIter == DictionaryConstructorTablePtr_->end())
       {
           FatalErrorIn(__PRETTY_FUNCTION__)
               << "Unknown wellManagement model "
               << wellManagement << nl << nl
               << "Valid wellManaegement models are : " << endl
-              << dictionaryConstructorTablePtr_->sortedToc()
+              << DictionaryConstructorTablePtr_->sortedToc()
               << exit(FatalError);
       }
 
