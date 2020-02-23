@@ -24,13 +24,16 @@ cd /home/foam/OpenRSR; ./Allwmake
 
 # A full test of all library classes
 # While generating partial coverage reports
+echo "####################################################################"
+ls /home/foam/OpenRSR/libs/wellModels/lnInclude
+echo "####################################################################"
 tests=$(find /home/foam/OpenRSR -iname "test" -type d)
 for t in $tests; do
     echo "Testing $t:"
     echo "------------------------------------------"
     pushd . > /dev/null
     cd "$t"
-    wclean; wmake
+    wmake
     check_errs $? "Test didn't compile ..."
     ./*Test
     lcov -c --directory Make/linux64GccDPOpt --output-file coverage-test.info
