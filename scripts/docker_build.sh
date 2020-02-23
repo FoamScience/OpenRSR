@@ -26,6 +26,7 @@ cd /home/foam/OpenRSR; ./Allwmake
 # While generating partial coverage reports
 echo "####################################################################"
 ls /home/foam/OpenRSR/libs/wellModels/lnInclude
+cat /home/foam/OpenRSR/libs/wellModels/Make/files
 echo "####################################################################"
 tests=$(find /home/foam/OpenRSR -iname "test" -type d)
 for t in $tests; do
