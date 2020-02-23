@@ -17,8 +17,5 @@ WORKDIR /home/foam
 RUN git clone -b dev --single-branch https://github.com/FoamScience/OpenRSR
 WORKDIR  OpenRSR
 
-# Source FE4 installation
-RUN source /opt/foam/foam-extend-4.0/etc/bashrc
-
-# Build in Opt mode
-RUN ./Allwmake
+# Source FE4 installation and Build
+RUN /bin/bash -c "source /opt/foam/foam-extend-4.0/etc/bashrc; ./Allwmake"
