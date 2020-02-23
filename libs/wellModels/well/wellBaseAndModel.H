@@ -335,6 +335,30 @@ public:
             return timeForDt_;
         }
 
+        //- Figure out lower cell index
+        label lowerCell() const {
+            label minCell = cellIDs()[0];
+            forAll(cellIDs(), ci)
+            {
+                scalar cg = (mesh_.C()[ci] && corrector_.g()).value();
+                scalar base = (mesh_.C()[minCell] && corrector_.g()).value();
+                minCell = (cg >= base) ? cellIDs()[ci] : minCell;
+            }
+            return minCell;
+        }
+
+        //- Figure out upper cell index
+        label upperCell() const {
+            label maxCell = cellIDs()[0];
+            forAll(cellIDs(), ci)
+            {
+                scalar cg = (mesh_.C()[ci] && corrector_.g()).value();
+                scalar base = (mesh_.C()[maxCell] && corrector_.g()).value();
+                maxCell = (cg <= base) ? cellIDs()[ci] : maxCell;
+            }
+            return maxCell;
+        }
+
         //- Correct well coeffs
         virtual void correct();
 
@@ -481,13 +505,13 @@ defineTemplateRunTimeSelectionTable(base##nPhases####KType##Well, dictionary); \
 defineNamedTemplateTypeNameAndDebug(base##nPhases####KType##WellModel, 0);          \
 defineTemplateRunTimeSelectionTable(base##nPhases####KType##WellModel, Dictionary); \
 
-#define makeWellModelDerived(Suffix, KType)                      \
+#define makeWellModelDerived(Suffix, KType, MuRhoType)                      \
                                                                                 \
-defineNamedTemplateTypeNameAndDebug(derived##KType##Suffix, 0);        \
+defineNamedTemplateTypeNameAndDebug(derived##KType####MuRhoType##Suffix, 0);        \
 addToRunTimeSelectionTable                                                      \
 (                                                                               \
     base2##KType##WellModel,                                              \
-    derived##KType##Suffix,                                            \
+    derived##KType####MuRhoType##Suffix,                                            \
     Dictionary                                                                  \
 );
 

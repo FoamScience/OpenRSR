@@ -37,6 +37,7 @@ SourceFiles
 #define incompressibleFluid_H
 
 #include "phase.H"
+#include "uniformDimensionedFields.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,12 +57,12 @@ public phase
 {
 
 protected:
-    
+
     //- Phase density
-    dimensionedScalar rho_;
+    uniformDimensionedScalarField rho_;
 
     //- Phase dynamic viscosity
-    dimensionedScalar mu_;
+    uniformDimensionedScalarField mu_;
 
 public:
 

@@ -30,13 +30,10 @@ License
 namespace Foam
 {
 
-//namespace twoPhaseWellModels
-//{
-
 // * * * * * * * * * * * * * * * * Constructors * * * * * * * * * * * * * * * //
 
-template<class KType>
-peaceman<KType>::peaceman
+template<class KType, class MuRhoType>
+peaceman<KType, MuRhoType>::peaceman
 (
     const word& name,
     const dictionary& wellProperties,
@@ -56,13 +53,13 @@ peaceman<KType>::peaceman
     ),
     canonicalMu_
     (
-        mesh.objectRegistry::lookupObject<volScalarField>(
+        mesh.objectRegistry::lookupObject<MuRhoType>(
             krModel_.canonicalPhase()+".mu"
         )
     ),
     nonCanonicalMu_
     (
-        mesh.objectRegistry::lookupObject<volScalarField>(
+        mesh.objectRegistry::lookupObject<MuRhoType>(
             (krModel_.phaseNames()[1] == krModel_.canonicalPhase() )
             ? krModel_.phaseNames()[0]+".mu"
             : krModel_.phaseNames()[1]+".mu"
@@ -70,13 +67,13 @@ peaceman<KType>::peaceman
     ),
     canonicalRho_
     (
-        mesh.objectRegistry::lookupObject<volScalarField>(
+        mesh.objectRegistry::lookupObject<MuRhoType>(
             krModel_.canonicalPhase()+".rho"
         )
     ),
     nonCanonicalRho_
     (
-        mesh.objectRegistry::lookupObject<volScalarField>(
+        mesh.objectRegistry::lookupObject<MuRhoType>(
             (krModel_.phaseNames()[1] == krModel_.canonicalPhase() )
             ? krModel_.phaseNames()[0]+".rho"
             : krModel_.phaseNames()[1]+".rho"
@@ -87,10 +84,19 @@ peaceman<KType>::peaceman
 
 // * * * * * * * * * * * * * * Private Member Methods * * * * * * * * * * * * * //
 
-template<class KType>
-scalarList peaceman<KType>::calculateFractionalFlow
+template<class KType, class MuRhoType>
+scalarList peaceman<KType, MuRhoType>::calculateFractionalFlow
 (
     const wellBase<KType, 2>& well
+) const
+{
+    notImplemented(__PRETTY_FUNCTION__);
+}
+
+template<>
+scalarList peaceman<Iso, Compressible>::calculateFractionalFlow
+(
+    const wellBase<Iso, 2>& well
 ) const
 {
     //  Where Qi = -(K kri A/mu)*grad(p)
@@ -109,8 +115,131 @@ scalarList peaceman<KType>::calculateFractionalFlow
     return fracFlow;
 }
 
-template<class KType>
-List<vector> peaceman<KType>::estimateCellSizes
+template<>
+scalarList peaceman<Iso, Incompressible>::calculateFractionalFlow
+(
+    const wellBase<Iso, 2>& well
+) const
+{
+    //  Where Qi = -(K kri A/mu)*grad(p)
+    // This ignores the effect of Pc on fractional flow for now
+    // Logic: grad(pc) should be much less than grad(p)
+    // Needs more investigation though
+    scalarList fracFlow(well.cellIDs().size());
+    forAll(fracFlow, ci)
+    {
+        label cellID = well.cellIDs()[ci];
+        fracFlow[ci] = 1.0
+            /(1.0 + krModel_.kr(1, cellID)*canonicalMu_.value()
+                /(krModel_.kr(0, cellID)*nonCanonicalMu_.value()+SMALL)
+            );
+    }
+    return fracFlow;
+}
+
+template<class KType, class MuRhoType>
+scalar peaceman<KType, MuRhoType>::calculateCellRateRatio
+(
+    const label& cellID,
+    const wellBase<Iso, 2>& well,
+    bool forCanonical
+) const
+{
+    notImplemented(__PRETTY_FUNCTION__);
+}
+
+template<>
+scalar peaceman<Iso, Compressible>::calculateCellRateRatio
+(
+    const label& cellID,
+    const wellBase<Iso, 2>& well,
+    bool forCanonical
+) const
+{
+    if (well.cellIDs().size() == 1)
+    {
+        return 1;
+    }
+
+    scalar rqi = 1;
+    scalar pref = this->p_[well.upperCell()]-this->p_[well.lowerCell()];
+
+    if (forCanonical)
+    {
+        forAll(well.cellIDs(), ci)
+        {
+            label celli = well.cellIDs()[ci];
+            if (cellID != celli)
+            {
+                rqi += this->K_[celli]*krModel_.kr(0, celli)*this->mesh_.V()[celli]
+                    * canonicalMu_[cellID] * (this->p_[cellID]-pref)
+                    / this->K_[cellID]/krModel_.kr(0, cellID)/this->mesh_.V()[cellID]
+                    / canonicalMu_[celli] * (this->p_[celli]-pref);
+            }
+        }
+    } else {
+        forAll(well.cellIDs(), ci)
+        {
+            label celli = well.cellIDs()[ci];
+            if (cellID != celli)
+            {
+                rqi += this->K_[celli]*krModel_.kr(1, celli)*this->mesh_.V()[celli]
+                    * nonCanonicalMu_[cellID] * (this->p_[cellID]-pref)
+                    / this->K_[cellID]/krModel_.kr(1, cellID)/this->mesh_.V()[cellID]
+                    / nonCanonicalMu_[celli] * (this->p_[celli]-pref);
+            }
+        }
+    }
+    return rqi;
+}
+
+template<>
+scalar peaceman<Iso, Incompressible>::calculateCellRateRatio
+(
+    const label& cellID,
+    const wellBase<Iso, 2>& well,
+    bool forCanonical
+) const
+{
+    if (well.cellIDs().size() == 1)
+    {
+        return 1;
+    }
+
+    scalar rqi = 1;
+    scalar pref = this->p_[well.upperCell()]-this->p_[well.lowerCell()];
+
+    if (forCanonical)
+    {
+        forAll(well.cellIDs(), ci)
+        {
+            label celli = well.cellIDs()[ci];
+            if (cellID != celli)
+            {
+                rqi += this->K_[celli]*krModel_.kr(0, celli)*this->mesh_.V()[celli]
+                    * canonicalMu_.value() * (this->p_[cellID]-pref)
+                    / this->K_[cellID]/krModel_.kr(0, cellID)/this->mesh_.V()[cellID]
+                    / canonicalMu_.value() * (this->p_[celli]-pref);
+            }
+        }
+    } else {
+        forAll(well.cellIDs(), ci)
+        {
+            label celli = well.cellIDs()[ci];
+            if (cellID != celli)
+            {
+                rqi += this->K_[celli]*krModel_.kr(1, celli)*this->mesh_.V()[celli]
+                    * nonCanonicalMu_.value() * (this->p_[cellID]-pref)
+                    / this->K_[cellID]/krModel_.kr(1, cellID)/this->mesh_.V()[cellID]
+                    / nonCanonicalMu_.value() * (this->p_[celli]-pref);
+            }
+        }
+    }
+    return rqi;
+}
+
+template<class KType, class MuRhoType>
+List<vector> peaceman<KType, MuRhoType>::estimateCellSizes
 (
     const wellBase<KType, 2>& well
 ) const
@@ -136,8 +265,8 @@ List<vector> peaceman<KType>::estimateCellSizes
     return h;
 }
 
-template<class KType>
-scalarList peaceman<KType>::estimateEquivRadius
+template<class KType, class MuRhoType>
+scalarList peaceman<KType, MuRhoType>::estimateEquivRadius
 (
     const wellBase<KType, 2>& well
 ) const
@@ -146,7 +275,7 @@ scalarList peaceman<KType>::estimateEquivRadius
 }
 
 template<>
-scalarList peaceman<Iso>::estimateEquivRadius
+scalarList peaceman<Iso, Compressible>::estimateEquivRadius
 (
     const wellBase<Iso, 2>& well
 ) const
@@ -170,8 +299,33 @@ scalarList peaceman<Iso>::estimateEquivRadius
     return re;
 }
 
-template<class KType>
-scalarList peaceman<KType>::calculateWellPI
+template<>
+scalarList peaceman<Iso, Incompressible>::estimateEquivRadius
+(
+    const wellBase<Iso, 2>& well
+) const
+{
+    // Isotropic media ---> Re depends only on geometry
+    scalarList re(well.cellIDs().size());
+
+    if (well.dict().found("equivalentRadius"))
+    {
+        // If re list is provided, use it
+        // (For optimization and history matching)
+        well.dict().lookup("equivalentRadius") >> re;
+    } else {
+        // If not provided, use a standard estimation
+        List<vector> h = estimateCellSizes(well);
+        forAll(re, ci)
+        {
+            re[ci] = 0.14*Foam::sqrt(Foam::pow(h[ci][0], 2) + Foam::pow(h[ci][1], 2));
+        }
+    }
+    return re;
+}
+
+template<class KType, class MuRhoType>
+scalarList peaceman<KType, MuRhoType>::calculateWellPI
 (
     const Foam::wellBase<KType, 2>& well
 ) const
@@ -181,7 +335,26 @@ scalarList peaceman<KType>::calculateWellPI
 
 
 template<>
-scalarList peaceman<Iso>::calculateWellPI
+scalarList peaceman<Iso, Compressible>::calculateWellPI
+(
+    const Foam::wellBase<Iso, 2>& well
+) const
+{
+    List<vector> h = estimateCellSizes(well);
+    scalarList re = estimateEquivRadius(well);
+    scalarList pi(re.size());
+
+    forAll(pi, ci)
+    {
+        label cellID = well.cellIDs()[ci];
+        pi[ci] = 2*mathematicalConstant::pi*K_[cellID]*h[ci][2]
+            /(log(re[ci]/well.radius()) + well.skin());
+    }
+    return pi;
+}
+
+template<>
+scalarList peaceman<Iso, Incompressible>::calculateWellPI
 (
     const Foam::wellBase<Iso, 2>& well
 ) const
@@ -201,8 +374,8 @@ scalarList peaceman<Iso>::calculateWellPI
 
 // * * * * * * * * * * * * * * Public Member Methods * * * * * * * * * * * * * //
 
-template<class KType>
-void peaceman<KType>::correct()
+template<class KType, class MuRhoType>
+void peaceman<KType, MuRhoType>::correct()
 {
     // Boundary conditions are completely ignored for now
     dimensionedScalar dzero("canIm", dimless/dimTime/dimPressure, 0.0);
@@ -287,60 +460,64 @@ void peaceman<KType>::correct()
 
 // * * * * * * * * * * * * * * * Public Operators * * * * * * * * * * * * * * * //
 
-template<class KType>
-void peaceman<KType>::operator()(const word& wellName) const
+template<class KType, class MuRhoType>
+void peaceman<KType, MuRhoType>::operator()(const word& wellName) const
 {
-    // Get const-ref to requested well
-    const wellBase<KType, 2>& well = 
-        objectRegistry::lookupObject<wellBase<KType,2> >(wellName);
+    // Get a non-const ref to requested well
+    // Only works because the original well object is not a const
+    wellBase<KType, 2>& well =
+        const_cast<wellBase<KType, 2>&>
+        (objectRegistry::lookupObject<wellBase<KType,2> >(wellName));
     // Update Well Productivity Index
     scalarList pi = calculateWellPI(well);
-//
-//    // Setup well source matrix
-//    // Thats finding coeffs where:
-//    // Qi = ai*BHP + bi*P + ci
-//    // for each phase
-//    List<VectorN<scalar,4> > src(pi.size());
-//    scalar timeIndex = 
-//        wellModelBase<KType,2>::mesh_.time().timeOutpuValue();
-//    word nonCanonicalPhase =
-//            (krModel_.phaseNames()[1] == krModel_.canonicalPhase() )
-//            ? krModel_.phaseNames()[0] 
-//            : krModel_.phaseNames()[1];
-//
-//    if(well.isActiveDrive(krModel_.canonicalPhase()+".rate"))
-//    {
-//        // Case 1: canonical Q is constrained
-//        // Estimate Canonical Fractional Flow
-//        scalarList fQ = calculateFractionalFlow(well);
-//        forAll(src, ci)
-//        {
-//            label cellID = well.cellIDs()[ci];
-//            // P and BHP coeffs are null
-//            src[ci][0] = 0;
-//            src[ci][2] = 0;
-//            // Free term is constrained constant for each phase
-//            // Use fractional flow to express non canonical rate
-//            src[ci][1] = well.driveAtTime(krModel_.canonicalPhase()+".rate", timeIndex);
-//            src[ci][3] = src[ci][1]*(1-fQ[cellID])/fQ[cellID];
-//        }
-//    } else if (well.isActiveDrive(nonCanonicalPhase+".rate"))
-//    {
-//        // Case 2: non-canonical Q is constrained
-//        notImplemented("nonCanonical Q constrainte not avilable")
-//
-//    } else if (well.isActiveDrive("totalRate"))
-//    {
-//        // Case 3: Total Q is constrained
-//        notImplemented("TotalRate constrainte not avilable")
-//    } else if (well.isActiveDrive("BHP"))
-//    {
-//        // Case 4: BHP is constrained
-//        notImplemented("BHP constrainte not avilable")
-//    }
-//
-//    // Update well source matrix
-//    well.setSource(src);
+
+    // Setup well source matrix
+    // Thats finding coeffs where:
+    // Qi = ai*BHP + bi*P + ci
+    // for each phase
+    List<VectorN<scalar,4> > src(pi.size());
+    scalar timeIndex =
+        wellModelBase<KType,2>::mesh_.time().timeOutputValue();
+    word nonCanonicalPhase =
+            (krModel_.phaseNames()[1] == krModel_.canonicalPhase() )
+            ? krModel_.phaseNames()[0] 
+            : krModel_.phaseNames()[1];
+
+    if(well.isActiveDrive(krModel_.canonicalPhase()+".rate"))
+    {
+        // Case 1: canonical Q is constrained
+        // Estimate Canonical Fractional Flow
+        scalarList fQ = calculateFractionalFlow(well);
+        forAll(src, ci)
+        {
+            label cellID = well.cellIDs()[ci];
+            scalar totalCanonicalQ = 
+                well.driveAtTime(krModel_.canonicalPhase()+".rate", timeIndex);
+            // P and BHP coeffs are null
+            src[ci][0] = 0;
+            src[ci][2] = 0;
+            // Free term is constrained constant for each phase
+            // Use fractional flow to express non canonical rate
+            src[ci][1] = totalCanonicalQ*calculateCellRateRatio(cellID, well, 1);
+            src[ci][3] = src[ci][1]*(1-fQ[cellID])/fQ[cellID];
+        }
+    } else if (well.isActiveDrive(nonCanonicalPhase+".rate"))
+    {
+        // Case 2: non-canonical Q is constrained
+        notImplemented("nonCanonical Q constrainte not avilable")
+
+    } else if (well.isActiveDrive("totalRate"))
+    {
+        // Case 3: Total Q is constrained
+        notImplemented("TotalRate constrainte not avilable")
+    } else if (well.isActiveDrive("BHP"))
+    {
+        // Case 4: BHP is constrained
+        notImplemented("BHP constrainte not avilable")
+    }
+
+    // Update well source matrix
+    well.setSource(src);
 }
 
 //};  // End namespace twoPhaseWellModels

@@ -33,10 +33,13 @@ Authors:
 #ifndef parameterTypes_H
 #define parameterTypes_H
 
+#include "uniformDimensionedFields.H"
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
+
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -46,6 +49,9 @@ namespace Foam
         // arguments to be used together with the ExampleClassTemplateBase.
         typedef volScalarField    Iso;
         typedef volTensorField    Aniso;
+
+        typedef volScalarField                  Compressible;
+        typedef uniformDimensionedScalarField   Incompressible;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

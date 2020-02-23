@@ -10,9 +10,10 @@ namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-template<class KType> class peaceman;
+template<class KType, class MuRhoType> class peaceman;
 
-typedef peaceman<Iso>   derivedIsoPeaceman;
+typedef peaceman<Iso, Incompressible>    derivedIsoIncompressiblePeaceman;
+typedef peaceman<Iso, Compressible>      derivedIsoCompressiblePeaceman;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

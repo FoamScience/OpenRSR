@@ -73,7 +73,7 @@ namespace Foam
                   Class peaceman Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class KType>
+template<class KType, class MuRhoType = Incompressible>
 class peaceman
 : public wellModelBase<KType, 2>
 {
@@ -89,21 +89,29 @@ protected:
         const capillaryPressureModelBase<2>& pcModel_;
 
         //- Canonical Phase viscosity
-        const volScalarField& canonicalMu_;
+        const MuRhoType& canonicalMu_;
 
         //- Non-Canonical Phase viscosity
-        const volScalarField& nonCanonicalMu_;
+        const MuRhoType& nonCanonicalMu_;
 
         //- Canonical Phase density
-        const volScalarField& canonicalRho_;
+        const MuRhoType& canonicalRho_;
 
         //- Non-Canonical Phase density
-        const volScalarField& nonCanonicalRho_;
+        const MuRhoType& nonCanonicalRho_;
 
     // Private Member Functions
 
         //- Calculate FractionalFlow In well cells
         scalarList calculateFractionalFlow(const wellBase<KType, 2>& well) const;
+
+        //- Calculate the ratio totalRate/cellRate
+        scalar calculateCellRateRatio
+        (
+            const label& cellID,
+            const wellBase<Iso, 2>& well,
+            bool forCanonical
+        ) const;
 
         //- Estimate Well Cell sizes
         List<vector> estimateCellSizes(const wellBase<KType, 2>& well) const;

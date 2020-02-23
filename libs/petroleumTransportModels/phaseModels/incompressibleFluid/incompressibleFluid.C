@@ -36,8 +36,28 @@ Foam::phaseModels::incompressibleFluid::incompressibleFluid
 )
 :
     phase(name,transportProperties,mesh),
-    rho_(phaseDict_.lookup("rho")),
-    mu_(phaseDict_.lookup("mu"))
+    rho_
+    (
+        IOobject
+        (
+            name+".rho",
+            mesh.time().timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    ),
+    mu_
+    (
+        IOobject
+        (
+            name+".mu",
+            mesh.time().timeName(),
+            mesh,
+            IOobject::MUST_READ,
+            IOobject::NO_WRITE
+        )
+    )
 {}
 
 // * * * * * * * * * * * * * * Public Member Functions * * * * * * * * * * * * //
