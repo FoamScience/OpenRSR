@@ -106,7 +106,7 @@ html_static_path = ['_static']
 
 import subprocess
 def config_inited_handler(app, config):
-    cmd=[repo_root+'/docs/Sphinx/source/makeDoxygen']
+    cmd=['docs/Sphinx/source/makeDoxygen']
     out = subprocess.Popen(cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
