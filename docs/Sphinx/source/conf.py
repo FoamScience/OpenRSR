@@ -106,10 +106,19 @@ html_static_path = ['_static']
 
 import subprocess
 def config_inited_handler(app, config):
-    cmd=['docs/Sphinx/source/makeDoxygen']
-    out = subprocess.Popen(cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT)
+    try:
+        cmd=[repo_root+'/docs/Sphinx/source/makeDoxygen']
+        out = subprocess.Popen(cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
+    except Exception as e:
+        cmd=['find', repo_root, '-type', 'd']
+        out = subprocess.Popen(cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
+        print(out)
+        raise e
+
     #try:
     #    1/0
     #except Exception as e:
