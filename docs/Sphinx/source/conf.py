@@ -105,7 +105,7 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']
 
 import subprocess
-def builder_inited_handler(app):
+def config_inited_handler(config):
     cmd=[repo_root+'/docs/Sphinx/makeDoxygen']
     out = subprocess.Popen(cmd,
             stdout=subprocess.PIPE,
@@ -121,4 +121,4 @@ def builder_inited_handler(app):
     #    raise e
 
 def setup(app):
-    app.connect('builder-inited', builder_inited_handler)
+    app.connect('config-inited', config_inited_handler)
