@@ -1,0 +1,3 @@
+#!/bin/bash
+cd $OPENRSR_ROOT/docs/Doxygen
+./Allwmake

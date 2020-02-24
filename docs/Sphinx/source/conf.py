@@ -42,7 +42,7 @@ extensions = [
 
 # Setup the breathe extension
 breathe_projects = {
-    "OpenRSR": repo_root+"/Doxygen/xml"
+    "OpenRSR": repo_root+"/docs/Doxygen/xml"
 }
 breathe_default_project = "OpenRSR"
 
@@ -106,15 +106,19 @@ html_static_path = ['_static']
 
 import subprocess
 def builder_inited_handler(app):
-    try:
-        1/0
-    except Exception as e:
-        cmd = ['find', '/', '-type', 'd']
-        out = subprocess.Popen(cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT)
-        print(out)
-        raise e
+    cmd=['./makeDoxygen']
+    out = subprocess.Popen(cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+    #try:
+    #    1/0
+    #except Exception as e:
+    #    cmd = ['find', '/', '-type', 'd']
+    #    out = subprocess.Popen(cmd,
+    #            stdout=subprocess.PIPE,
+    #            stderr=subprocess.STDOUT)
+    #    print(out)
+    #    raise e
 
 def setup(app):
     app.connect('builder-inited', builder_inited_handler)
