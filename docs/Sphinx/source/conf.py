@@ -24,6 +24,8 @@ author = 'Fadeli Mohammed Elwardi'
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
 
+import os
+repo_root = os.environ.get('OPENRSR_ROOT')
 
 # -- General configuration ---------------------------------------------------
 
@@ -50,13 +52,13 @@ exhale_args = {
         "containmentFolder":     "./api",
         "rootFileName":          "library_root.rst",
         "rootFileTitle":         "Library API",
-        "doxygenStripFromPath":  "/home/elwardi/GitRepos/OpenRSR",
+        "doxygenStripFromPath":  repo_root,
         # Suggested optional arguments
         "createTreeView":        True,
         # TIP: if using the sphinx-bootstrap-theme, you need
         # "treeViewIsBootstrap": True,
         "exhaleExecutesDoxygen": True,
-        "exhaleDoxygenStdin":    "INPUT = /home/elwardi/GitRepos/OpenRSR/libs"
+        "exhaleDoxygenStdin":    "INPUT = "+repo_root+"/libs"
 }
 
 
