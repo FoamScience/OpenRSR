@@ -42,7 +42,7 @@ extensions = [
 
 # Setup the breathe extension
 breathe_projects = {
-    "OpenRSR": "../../Doxygen/xml"
+    "OpenRSR": repo_root+"/Doxygen/xml"
 }
 breathe_default_project = "OpenRSR"
 
@@ -57,7 +57,7 @@ exhale_args = {
         "createTreeView":        True,
         # TIP: if using the sphinx-bootstrap-theme, you need
         # "treeViewIsBootstrap": True,
-        "exhaleExecutesDoxygen": True,
+        "exhaleExecutesDoxygen": False,
         "exhaleDoxygenStdin":    "INPUT = "+repo_root+"/libs"
 }
 
@@ -106,11 +106,15 @@ html_static_path = ['_static']
 
 import subprocess
 def builder_inited_handler(app):
-    cmd = ['find', '/', '-type', 'd']
-    out = subprocess.Popen(cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT)
-    print(out)
+    try:
+        1/0
+    except Exception as e:
+        cmd = ['find', '/', '-type', 'd']
+        out = subprocess.Popen(cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT)
+        print(out)
+        raise e
 
 def setup(app):
     app.connect('builder-inited', builder_inited_handler)
