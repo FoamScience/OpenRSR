@@ -45,7 +45,7 @@ find . -iname coverage-test.info -exec cat {} >> main-coverage.info +
 # We don't care for testing Foam-Extend and Catch code
 lcov --extract  main-coverage.info "/home/foam/OpenRSR/*" -o lcov.info
 lcov --remove  lcov.info "*catch2*" -o lcov.info
-sed -i 's/\home\/foam\/OpenRSR\///g' lcov.info
+sed -i 's_/home/foam/OpenRSR/__g' lcov.info
 #genhtml lcov.info --output-directory coverage-output
 
 # Send final report to Codacy
