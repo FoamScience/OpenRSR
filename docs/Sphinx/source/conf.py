@@ -103,3 +103,14 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+import subprocess
+def builder_inited_handler(app):
+    cmd = ['find', '/', '-type', 'd']
+    out = subprocess.Popen(cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+    print(out)
+
+def setup(app):
+    app.connect('builder-inited', builder_inited_handler)
