@@ -50,13 +50,13 @@ exhale_args = {
         "containmentFolder":     "./api",
         "rootFileName":          "library_root.rst",
         "rootFileTitle":         "Library API",
-        "doxygenStripFromPath":  "/home/elwardi/GitRepos/OpenRSR/libs",
+        "doxygenStripFromPath":  "/home/elwardi/GitRepos/OpenRSR",
         # Suggested optional arguments
         "createTreeView":        True,
         # TIP: if using the sphinx-bootstrap-theme, you need
         # "treeViewIsBootstrap": True,
-        "exhaleExecutesDoxygen": False,
-        "exhaleDoxygenStdin":    "INPUT = ../../../libs"
+        "exhaleExecutesDoxygen": True,
+        "exhaleDoxygenStdin":    "INPUT = /home/elwardi/GitRepos/OpenRSR/libs"
 }
 
 

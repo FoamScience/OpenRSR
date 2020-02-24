@@ -5,7 +5,7 @@ EXE_INC = \
     -I../../../include \
     -I../../lnInclude \
     -I../../../petroleumTransportModels/lnInclude \
-    -I../../../../testCases/catch2/lnInclude \
+    -I../../../../testCases/catch2/include \
     -fpermissive
 
 EXE_LIBS = \

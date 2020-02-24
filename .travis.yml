@@ -17,4 +17,4 @@ language:
 
 script:
   - docker run --rm -u root -v $PWD:/home/foam/OpenRSR foamscience/openrsr /bin/bash -c "/home/foam/OpenRSR/scripts/docker_build.sh"
-  - curl -Ls https://coverage.codacy.com/get.sh | bash -s report -r $PWD/lcov.info
+  - curl -Ls https://coverage.codacy.com/get.sh | bash -s report --commit-uuid $TRAVIS_COMMIT -r $PWD/lcov.info
