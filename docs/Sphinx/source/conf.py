@@ -106,7 +106,7 @@ html_static_path = ['_static']
 
 import subprocess
 def builder_inited_handler(app):
-    cmd=['./makeDoxygen']
+    cmd=[repo_root+'/docs/Sphinx/makeDoxygen']
     out = subprocess.Popen(cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
