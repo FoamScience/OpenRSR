@@ -20,7 +20,8 @@ set -ev
 apt install -qq -y lcov curl jq
 
 # Get to the directory, compile libraries (Opt mode)
-cd /home/foam/OpenRSR; ./Allwmake
+cd /home/foam/OpenRSR; ./Allwclean; ./Allwmake
+find libs/wellModels/lnInclude
 
 # A full test of all library classes
 # While generating partial coverage reports

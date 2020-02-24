@@ -32,7 +32,7 @@ Description
 namespace Foam
 {
 
-// Function to find the combinations
+//- Template Function to find binary combinations
 template<class T>
 constexpr List<List<T> > findBinaryCombinations(const List<T>& a)
 {

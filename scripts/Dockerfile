@@ -2,7 +2,7 @@
 FROM ubuntu:xenial
 
 # Install dependencies for extend if building from sources
-RUN apt-get update && apt install -qq -y wget vim git-core build-essential binutils-dev cmake flex zlib1g-dev qt4-dev-tools libqt4-dev libncurses5-dev libiberty-dev libxt-dev rpm mercurial graphviz python3 python3-dev
+RUN apt-get update && apt install -qq -y wget vim git-core build-essential binutils-dev cmake flex zlib1g-dev qt4-dev-tools libqt4-dev libncurses5-dev libiberty-dev libxt-dev rpm mercurial graphviz python3 python3-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Else, install binaries and continue
 RUN wget https://sourceforge.net/projects/foam-extend/files/foam-extend-4.0/Ubuntu_16.04/foam-extend-4.0_amd64_Ubuntu1604_f500917.deb/download -O extend.deb

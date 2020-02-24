@@ -1,12 +1,12 @@
 #!/bin/sh
 
 # Compile porous models libraries 
-wclean libs/transportModels
+wclean libs/petroleumTransportModels
 wclean libs/relativePermeabilityModels
 wclean libs/capillaryPressureModels
 wclean libs/wellModels
-# Compile boundary conditions
-wclean libs/finiteVolume/fields/fvPatchFields
 
+find . -type d -iname "lnInclude" -exec rm -r {} +
+find . -type d -iname "linux*" -exec rm -r {} +
 # Compile solvers 
 #wclean all solvers

@@ -10,4 +10,8 @@
 **.gcda
 **/coverage-output/**
 *Test
+**/html/**
+**/xml/**
+**/latex/**
+**/api/**
 allTest.sh

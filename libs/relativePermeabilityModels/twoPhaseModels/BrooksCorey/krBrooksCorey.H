@@ -26,23 +26,36 @@ Class
 
 Description
     Modified two-phases Brooks-Corey relative permeability model:
-    \f[
+
+    \rst
+
+    .. math::
+
         k_{rw} = k_{rw, max}(\frac{S_w-S_{wi}}{1-S_{wi}-S_{or}})^{m_w}
-    \f]
-    \f[
+
         k_{rn} = k_{rn, max}(\frac{1-S_w-S_{nr}}{1-S_{wi}-S_{nr}})^{m_n}
-    \f]
 
     Where
-    \vartable
-        m_i             | Corey Exponents
-        k_r             | Relative permeability
-        w,n             | Wetting and NonWetting indices respectively
-        S_{wi}          | Irreducible wetting saturation
-        S_{nr}          | Residual non-wetting saturation
-        k_{rn, max}     | End point relative permeability to oil normalized to absolute plug air permeability
-        k_{rw, max}     | End point relative permeability to water normalized to absolute plug air permeability
-    \endtable
+
+    +-------------------------+-----------------------------------------------+
+    |  :math:`m_i`            | Corey Exponents                               |
+    +-------------------------+-----------------------------------------------+
+    |  :math:`k_r`            | Relative permeability                         |
+    +-------------------------+-----------------------------------------------+
+    |  :math:`w,n`            | Wetting and NonWetting indices respectively   |
+    +-------------------------+-----------------------------------------------+
+    |  :math:`S_{wi}`         | Irreducible wetting saturation                |
+    +-------------------------+-----------------------------------------------+
+    |  :math:`S_{nr}`         | Residual non-wetting saturation               |
+    +-------------------------+-----------------------------------------------+
+    |  :math:`k_{rn, max}`    | End point relative permeability to oil        |
+    |                         | normalized to absolute plug air permeability  |
+    +-------------------------+-----------------------------------------------+
+    |  :math:`k_{rw, max}`    | End point relative permeability to water      |
+    |                         | normalized to absolute plug air permeability  |
+    +-------------------------+-----------------------------------------------+
+
+    \endrst
 
 SourceFiles
     krBrooksCorey.C
