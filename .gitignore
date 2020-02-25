@@ -15,4 +15,6 @@
 **/latex/**
 **/api/**
 **/build/**
+**/_build/**
+**.tmp
 allTest.sh

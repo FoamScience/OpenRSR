@@ -11,6 +11,7 @@ Welcome to OpenRSR's documentation!
    :caption: Contents:
 
    api/library_root
+   doxygen/index.html
 
 
 

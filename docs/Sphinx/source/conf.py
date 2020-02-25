@@ -24,6 +24,8 @@ author = 'Fadeli Mohammed Elwardi'
 # The full version, including alpha/beta/rc tags
 release = '0.0.1'
 
+import os
+repo_root = os.environ.get('OPENRSR_ROOT')
 
 # -- General configuration ---------------------------------------------------
 
@@ -39,8 +41,9 @@ extensions = [
 ]
 
 # Setup the breathe extension
+breath_proj = repo_root+"/docs/Doxygen/xml"
 breathe_projects = {
-    "OpenRSR": "../../Doxygen/xml"
+    "OpenRSR": breath_proj
 }
 breathe_default_project = "OpenRSR"
 
@@ -50,28 +53,15 @@ exhale_args = {
         "containmentFolder":     "./api",
         "rootFileName":          "library_root.rst",
         "rootFileTitle":         "Library API",
-        "doxygenStripFromPath":  "/home/elwardi/GitRepos/OpenRSR",
+        "doxygenStripFromPath":  repo_root,
         # Suggested optional arguments
         "createTreeView":        True,
         # TIP: if using the sphinx-bootstrap-theme, you need
         # "treeViewIsBootstrap": True,
-        "exhaleExecutesDoxygen": True,
-        "exhaleDoxygenStdin":    "INPUT = /home/elwardi/GitRepos/OpenRSR/libs"
+        "exhaleExecutesDoxygen": False,
+        "exhaleDoxygenStdin":    "INPUT = "+repo_root+"/libs"
 }
 
-
-#mathjax_config = {
-##    'extensions': ['tex2jax.js'],
-##    'jax': ['input/TeX', 'output/HTML-CSS'],
-#    'extensions': ["tex2jax.js"],
-#    'jax': ["input/TeX", "output/HTML-CSS"],
-#    'tex2jax': {
-#      'inlineMath': [ ['$','$'], ["\\(","\\)"] ],
-#      'displayMath': [ ['$$','$$'] ],
-#      'processEscapes': 'true'
-#    },
-#    "HTML-CSS": { 'availableFonts': ["TeX"] }
-#}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -101,3 +91,12 @@ html_theme = "sphinx_rtd_theme"
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+import os
+def config_inited_handler(app, config):
+    # Run doxygen with custom Doxyfile and stuff
+    os.system('./makeDoxygen')
+    os.system("mv ../../Doxygen/html _build/html/doxygen")
+
+def setup(app):
+    app.connect('config-inited', config_inited_handler)
