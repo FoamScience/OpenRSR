@@ -1,4 +1,5 @@
 #!/bin/bash
+# Requires $OPENRSR_ROOT to be defined
 cd $OPENRSR_ROOT/docs/Doxygen
 ./Allwmake
 cd -

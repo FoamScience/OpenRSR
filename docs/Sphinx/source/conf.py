@@ -41,8 +41,9 @@ extensions = [
 ]
 
 # Setup the breathe extension
+breath_proj = repo_root+"/docs/Doxygen/xml"
 breathe_projects = {
-    "OpenRSR": repo_root+"/docs/Doxygen/xml"
+    "OpenRSR": breath_proj
 }
 breathe_default_project = "OpenRSR"
 
@@ -105,19 +106,9 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ['_static']
 
 import subprocess
+import os
 def config_inited_handler(app, config):
-    try:
-        cmd=[repo_root+'/docs/Sphinx/source/makeDoxygen']
-        out = subprocess.Popen(cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT)
-    except Exception as e:
-        cmd=['find', repo_root, '-type', 'd']
-        out = subprocess.Popen(cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT)
-        print(out)
-        raise e
+        os.system('./makeDoxygen')
 
     #try:
     #    1/0
