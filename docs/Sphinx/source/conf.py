@@ -63,19 +63,6 @@ exhale_args = {
 }
 
 
-#mathjax_config = {
-##    'extensions': ['tex2jax.js'],
-##    'jax': ['input/TeX', 'output/HTML-CSS'],
-#    'extensions': ["tex2jax.js"],
-#    'jax': ["input/TeX", "output/HTML-CSS"],
-#    'tex2jax': {
-#      'inlineMath': [ ['$','$'], ["\\(","\\)"] ],
-#      'displayMath': [ ['$$','$$'] ],
-#      'processEscapes': 'true'
-#    },
-#    "HTML-CSS": { 'availableFonts': ["TeX"] }
-#}
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -105,20 +92,15 @@ html_theme = "sphinx_rtd_theme"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-import subprocess
 import os
 def config_inited_handler(app, config):
-        os.system('./makeDoxygen')
+    # Run doxygen with custom Doxyfile and stuff
+    os.system('./makeDoxygen')
 
-    #try:
-    #    1/0
-    #except Exception as e:
-    #    cmd = ['find', '/', '-type', 'd']
-    #    out = subprocess.Popen(cmd,
-    #            stdout=subprocess.PIPE,
-    #            stderr=subprocess.STDOUT)
-    #    print(out)
-    #    raise e
+def build_finished_handler(app, exception):
+    # Move Doxygen html docs to public folder
+    os.system("mv ../../Doxygen/html _build/html/doxygen")
 
 def setup(app):
     app.connect('config-inited', config_inited_handler)
+    app.connect('build-finished', config_inited_handler)
