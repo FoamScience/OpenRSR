@@ -96,11 +96,7 @@ import os
 def config_inited_handler(app, config):
     # Run doxygen with custom Doxyfile and stuff
     os.system('./makeDoxygen')
-
-def build_finished_handler(app, exception):
-    # Move Doxygen html docs to public folder
     os.system("mv ../../Doxygen/html _build/html/doxygen")
 
 def setup(app):
     app.connect('config-inited', config_inited_handler)
-    app.connect('build-finished', config_inited_handler)
