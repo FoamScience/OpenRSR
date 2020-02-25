@@ -6,6 +6,8 @@
 
 [![CodeFactor](https://www.codefactor.io/repository/github/foamscience/openrsr/badge/dev)](https://www.codefactor.io/repository/github/foamscience/openrsr/overview/dev) ![TravisBuild](https://travis-ci.com/FoamScience/OpenRSR.svg?branch=dev) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/fba58294886e494fa636370dd24cc79e)](https://www.codacy.com/manual/elwardifadeli/OpenRSR?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=FoamScience/OpenRSR&amp;utm_campaign=Badge_Grade)
 ![CodeSize](https://img.shields.io/github/repo-size/FoamScience/OpenRSR)
+[![Documentation Status](https://readthedocs.org/projects/openrsr/badge/?version=latest)](https://openrsr.readthedocs.io/en/latest/?badge=latest)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/fba58294886e494fa636370dd24cc79e)](https://www.codacy.com/manual/elwardifadeli/OpenRSR?utm_source=github.com&utm_medium=referral&utm_content=FoamScience/OpenRSR&utm_campaign=Badge_Coverage)
 ![DockerBuild](https://img.shields.io/docker/cloud/build/foamscience/openrsr)
 ![Downloads](https://img.shields.io/github/downloads/foamscience/openrsr/total)
 
