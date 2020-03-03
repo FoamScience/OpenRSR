@@ -381,20 +381,19 @@ Foam::wellModelBase<KType, nPhases>::New
           FatalErrorIn(__PRETTY_FUNCTION__)
               << "Unknown wellManagement model "
               << wellManagement << nl << nl
-              << "Valid wellManaegement models are : " << endl
+              << "Valid wellManagement models are : " << endl
               << DictionaryConstructorTablePtr_->sortedToc()
               << exit(FatalError);
       }
 
-    return autoPtr<wellModelBase<KType, nPhases> >
-      (cstrIter()(name, wellProperties, mesh));
+    return    autoPtr<wellModelBase<KType, nPhases> >
+        (cstrIter()(name, wellProperties, mesh));
 }
-
 
 template<class KType, int nPhases>
 void Foam::wellModelBase<KType, nPhases>::readWells()
 {
-    Info << "Reading Wells" << endl;
+    Info << "Reading Wells" << nl << endl;
 
     // Store well entries
     const PtrList<entry> wellsInfo(

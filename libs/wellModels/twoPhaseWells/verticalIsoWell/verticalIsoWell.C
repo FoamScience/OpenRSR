@@ -29,7 +29,7 @@ License
 namespace Foam
 {
 
-namespace twoPhaseWellModels
+namespace twoPhaseWells
 {
 
 defineTypeNameAndDebug(verticalIsoWell, 0);

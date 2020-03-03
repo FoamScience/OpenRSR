@@ -38,7 +38,8 @@ namespace Foam
     // Peaceman methods as two-phase well model
     makeWellModelDerived(Peaceman, Iso, Incompressible)
     makeWellModelDerived(Peaceman, Iso, Compressible)
-    //makeWellModelDerived(Iso, 2)
+    //makePeacemanModel(Iso, Compressible)
+    //makePeacemanModel(Iso, Incompressible)
     //}
 
 };

@@ -402,7 +402,7 @@ protected:
         //- Ref to Gravitational field
         const uniformDimensionedVectorField& g_;
 
-    // Private Member Functions
+    // Potected Member Functions
 
         //- Read wells from list
         void readWells();
@@ -507,7 +507,7 @@ defineTemplateRunTimeSelectionTable(base##nPhases####KType##WellModel, Dictionar
 
 #define makeWellModelDerived(Suffix, KType, MuRhoType)                      \
                                                                                 \
-defineNamedTemplateTypeNameAndDebug(derived##KType####MuRhoType##Suffix, 0);        \
+defineNamedTemplateTypeNameAndDebug(derived##KType####MuRhoType##Suffix, 0);    \
 addToRunTimeSelectionTable                                                      \
 (                                                                               \
     base2##KType##WellModel,                                              \

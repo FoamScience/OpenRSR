@@ -93,7 +93,7 @@ SCENARIO("Instantiation of two-Phase Peaceman well model object")
                 IOobject::NO_WRITE
             ),
             mesh,
-            dimensionedScalar("p", dimPressure, 0.0)
+            dimensionedScalar("p", dimPressure, 1e7)
         );
         // The permeability field
         volScalarField K
@@ -142,16 +142,45 @@ SCENARIO("Instantiation of two-Phase Peaceman well model object")
             }
         }
 
-        //WHEN("Pass a wellModel child to wellBase's constructor, and run wellBase.correct()")
-        //{
-        //    autoPtr<base2IsoWellModel>    wModel =
-        //        base2IsoWellModel::New("derivedWellModel", wellProperties, mesh);
-        //    THEN("wellBase Members must be updated properly")
-        //    {
-        //        wModel->wells()[0].correct();
-        //        REQUIRE(wModel->wells()[0].equivalentRadius() == 15);
-        //    }
-        //}
+        WHEN("Total canonical-phase flow rate is supplied for a multi-cell well")
+        {
+            autoPtr<base2IsoWellModel> wModel =
+                base2IsoWellModel::New("wModel", wellProperties, mesh);
+
+            const base2IsoWell& aWell = 
+                wModel->objectRegistry::lookupObject<base2IsoWell>("aWell");
+            CHECK(aWell.cellIDs().size() == 2);
+
+            THEN("The total well rate reported is correct.")
+            {
+                const double totalRateFromFile = aWell.driveAtTime("water.rate", 1);
+                double calculatedTotalRate = 0;
+
+                runTime.setTime(1.0, 1);
+                CHECK(aWell.isActiveDrive("water.rate"));
+                krModel->correct();
+                wModel->correct();
+
+                const fvScalarMatrix& wellMatrix = wModel->source("water");
+                if (wModel->debug())
+                {
+                    Info << wellMatrix.source() << nl
+                         << "Is asymmetric? " << wellMatrix.asymmetric() << nl
+                         << "Is diagonal? " << wellMatrix.asymmetric() << nl
+                         << "Dimensions: " << wellMatrix.dimensions() << nl
+                         << "Lower: " << wellMatrix.hasLower() << nl
+                         << "Upper: " << wellMatrix.hasUpper() << nl;
+                }
+
+                calculatedTotalRate = sum(wellMatrix.source());
+                if (aWell.operationHandlingToWord(aWell.operation()) == "production")
+                {
+                    REQUIRE_THAT(totalRateFromFile, Catch::WithinAbs(-calculatedTotalRate, 0.001));
+                } else {
+                    REQUIRE_THAT(totalRateFromFile, Catch::WithinAbs(calculatedTotalRate, 0.001));
+                }
+            }
+        }
     }
 }
 

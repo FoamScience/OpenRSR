@@ -73,7 +73,7 @@ namespace Foam
                   Class peaceman Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class KType, class MuRhoType = Incompressible>
+template<class KType, class MuRhoType>
 class peaceman
 : public wellModelBase<KType, 2>
 {
@@ -100,7 +100,7 @@ protected:
         //- Non-Canonical Phase density
         const MuRhoType& nonCanonicalRho_;
 
-    // Private Member Functions
+    // Protected Member Functions
 
         //- Calculate FractionalFlow In well cells
         scalarList calculateFractionalFlow(const wellBase<KType, 2>& well) const;
@@ -126,6 +126,20 @@ public:
 
     //- Runtime type information
     TypeName("peaceman");
+
+    // Declare run-time constructor selection table
+    //declareRunTimeSelectionTable
+    //(
+    //    autoPtr,
+    //    wellModelBase,
+    //    Dictionary,
+    //    (
+    //        const word& name,
+    //        const dictionary& wellProperties,
+    //        const fvMesh& mesh
+    //    ),
+    //    (name, wellProperties, mesh)
+    //);
 
     // Constructors
 
@@ -153,6 +167,18 @@ public:
 
 //}; // End namespace twoPhaseWellModels
 
+// Macro for RTS-enabled class initiated from this class template
+#define makePeacemanModel(KType, MuRhoType)                                     \
+                                                                                \
+defineNamedTemplateTypeNameAndDebug(derived##KType####MuRhoType##Peaceman, 0);    \
+addToRunTimeSelectionTable                                                      \
+(                                                                               \
+    base2##KType##WellModel,                                              \
+    derived##KType####MuRhoType##Peaceman,                                      \
+    Dictionary                                                                  \
+);
+
+
 } // End namespace Foam
 
 #ifdef NoRepository
@@ -164,3 +190,9 @@ public:
 #endif
 
 // ************************************************************************* //
+//makeWellModelDerived(Peaceman, KType, MuRhoType);                               \
+//defineTemplateRunTimeSelectionTable                                             \
+//(                                                                               \
+//    derived##KType####MuRhoType##Peaceman,                                      \
+//    Dictionary                                                                  \
+//);                                                                              \

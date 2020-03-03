@@ -43,7 +43,7 @@ SourceFiles
 namespace Foam
 {
 
-namespace twoPhaseWellModels
+namespace twoPhaseWells
 {
 
 /*---------------------------------------------------------------------------*\

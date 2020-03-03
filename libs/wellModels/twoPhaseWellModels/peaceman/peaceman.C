@@ -82,7 +82,7 @@ peaceman<KType, MuRhoType>::peaceman
 {
 }
 
-// * * * * * * * * * * * * * * Private Member Methods * * * * * * * * * * * * * //
+// * * * * * * * * * * * * * * Protected Member Methods * * * * * * * * * * * * * //
 
 template<class KType, class MuRhoType>
 scalarList peaceman<KType, MuRhoType>::calculateFractionalFlow
@@ -156,6 +156,10 @@ scalar peaceman<Iso, Compressible>::calculateCellRateRatio
     bool forCanonical
 ) const
 {
+    // Calculate Qt/Qcell based on Peaceman Well model
+    // Currently doens't account for gravitational effects.
+    // ---> Calculations based on fractional flow
+    // ---> Maybe relying on well PI is a more general approach
     if (well.cellIDs().size() == 1)
     {
         return 1;
@@ -219,7 +223,7 @@ scalar peaceman<Iso, Incompressible>::calculateCellRateRatio
                 rqi += this->K_[celli]*krModel_.kr(0, celli)*this->mesh_.V()[celli]
                     * canonicalMu_.value() * (this->p_[cellID]-pref)
                     / this->K_[cellID]/krModel_.kr(0, cellID)/this->mesh_.V()[cellID]
-                    / canonicalMu_.value() * (this->p_[celli]-pref);
+                    / canonicalMu_.value() / (this->p_[celli]-pref);
             }
         }
     } else {
@@ -378,9 +382,10 @@ template<class KType, class MuRhoType>
 void peaceman<KType, MuRhoType>::correct()
 {
     // Boundary conditions are completely ignored for now
-    dimensionedScalar dzero("canIm", dimless/dimTime/dimPressure, 0.0);
+    dimensionedScalar imzero("Im0", dimless/dimTime/dimPressure, 0.0);
+    dimensionedScalar exzero("Ex0", dimless/dimTime, 0.0);
     const word& canPhase = krModel_.canonicalPhase();
-    const word& nonCanPhase = 
+    const word nonCanPhase = 
             (krModel_.phaseNames()[1] == krModel_.canonicalPhase() )
             ? krModel_.phaseNames()[0]
             : krModel_.phaseNames()[1];
@@ -395,7 +400,7 @@ void peaceman<KType, MuRhoType>::correct()
             IOobject::NO_WRITE
         ),
         this->mesh_,
-        dzero,
+        imzero,
         "zeroGradient"
     );
     volScalarField canEx
@@ -409,7 +414,7 @@ void peaceman<KType, MuRhoType>::correct()
             IOobject::NO_WRITE
         ),
         this->mesh_,
-        dzero,
+        exzero,
         "zeroGradient"
     );
     volScalarField ncaIm
@@ -423,7 +428,7 @@ void peaceman<KType, MuRhoType>::correct()
             IOobject::NO_WRITE
         ),
         this->mesh_,
-        dzero,
+        imzero,
         "zeroGradient"
     );
     volScalarField ncaEx
@@ -437,7 +442,7 @@ void peaceman<KType, MuRhoType>::correct()
             IOobject::NO_WRITE
         ),
         this->mesh_,
-        dzero,
+        exzero,
         "zeroGradient"
     );
     
@@ -498,7 +503,7 @@ void peaceman<KType, MuRhoType>::operator()(const word& wellName) const
             src[ci][2] = 0;
             // Free term is constrained constant for each phase
             // Use fractional flow to express non canonical rate
-            src[ci][1] = totalCanonicalQ*calculateCellRateRatio(cellID, well, 1);
+            src[ci][1] = totalCanonicalQ/calculateCellRateRatio(cellID, well, 1);
             src[ci][3] = src[ci][1]*(1-fQ[cellID])/fQ[cellID];
         }
     } else if (well.isActiveDrive(nonCanonicalPhase+".rate"))
