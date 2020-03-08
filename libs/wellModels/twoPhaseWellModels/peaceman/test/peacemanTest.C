@@ -42,9 +42,7 @@ Developers
 #include "wellBasesFwd.H"
 #include "peaceman.H"
 #include "relativePermeabilityModelBase.H"
-#include "relativePermeabilityModelBasesFwd.H"
 #include "capillaryPressureModelBase.H"
-#include "capillaryPressureModelBasesFwd.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

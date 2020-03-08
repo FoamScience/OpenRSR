@@ -82,13 +82,13 @@ public:
     // Member Functions
     
         //- Return dynamic viscosity
-        const dimensionedScalar& mu() const
+        const uniformDimensionedScalarField& mu() const
         {
             return mu_;
         }
 
         //- Return density
-        const dimensionedScalar& rho() const
+        const uniformDimensionedScalarField& rho() const
         {
             return rho_;
         }
