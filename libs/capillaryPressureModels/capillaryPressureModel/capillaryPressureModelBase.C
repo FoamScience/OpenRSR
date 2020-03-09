@@ -64,7 +64,7 @@ capillaryPressureModelBase<nPhases>::capillaryPressureModelBase
         ),
         mesh,
         dimensioned<cmptT<nPhases> >
-            ( "pc", dimless, pcTableReturn<nPhases>::zero()),
+            ( "pc", dimPressure, pcTableReturn<nPhases>::zero()),
         zeroGradientFvPatchField<vector>::typeName
     ),
     dpcdS_
@@ -79,7 +79,7 @@ capillaryPressureModelBase<nPhases>::capillaryPressureModelBase
         ),
         mesh,
         dimensioned<cmptT<nPhases> >
-            ( "dpcdS", dimless, pcTableReturn<nPhases>::zero()),
+            ( "dpcdS", dimPressure, pcTableReturn<nPhases>::zero()),
         zeroGradientFvPatchField<vector>::typeName
     )
 {
