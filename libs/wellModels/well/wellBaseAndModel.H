@@ -251,6 +251,12 @@ public:
             return operation_;
         }
 
+        //- Return operation sign to use in source equations
+        scalar operationSign() const {
+            return (operationHandlingToWord(operation_) == "production")
+                ? 1.0 : -1.0;
+        }
+
         //- Return Well total volume
         const scalar& totalVolume() const {
             return tV_;
@@ -478,6 +484,22 @@ public:
         //- Return phase well source matrix
         const fvScalarMatrix& source(const word& phaseName) const {
             return source_[phaseName];
+        }
+
+        //- Return phase explicit source
+        const scalarField& explicitSource(const word& phaseName) const {
+            if (
+                source_[phaseName].hasLower()
+                && source_[phaseName].hasUpper()
+                && (source_[phaseName].source() != scalarField(mesh_.nCells(), 0))
+               ) {
+                WarningIn(__PRETTY_FUNCTION__)
+                    << "Trying to extract the source vector of well contribution"
+                    << " of phase " << phaseName 
+                    << " leaving behind important parts of the matrix."
+                    << endl;
+            }
+            return source_[phaseName].source();
         }
 
         //- Return a ref to model gracitational field

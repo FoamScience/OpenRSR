@@ -42,7 +42,9 @@ Developers
 #include "wellBasesFwd.H"
 #include "peaceman.H"
 #include "relativePermeabilityModelBase.H"
+#include "relativePermeabilityModelBasesFwd.H"
 #include "capillaryPressureModelBase.H"
+#include "capillaryPressureModelBasesFwd.H"
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -170,13 +172,14 @@ SCENARIO("Instantiation of two-Phase Peaceman well model object")
                          << "Upper: " << wellMatrix.hasUpper() << nl;
                 }
 
-                calculatedTotalRate = sum(wellMatrix.source());
-                if (aWell.operationHandlingToWord(aWell.operation()) == "production")
+                //calculatedTotalRate = sum(wellMatrix.source());
+                forAll(wellMatrix.source(), ci)
                 {
-                    REQUIRE_THAT(totalRateFromFile, Catch::WithinAbs(-calculatedTotalRate, 0.001));
-                } else {
-                    REQUIRE_THAT(totalRateFromFile, Catch::WithinAbs(calculatedTotalRate, 0.001));
+                    calculatedTotalRate += wellMatrix.source()[ci]*mesh.V()[ci];
                 }
+                REQUIRE_THAT(totalRateFromFile,
+                        Catch::WithinAbs(-aWell.operationSign()*calculatedTotalRate, 0.001)
+                );
             }
         }
     }

@@ -81,6 +81,9 @@ class peaceman
 protected:
 
     // Protected Data Members 
+    
+        //- Kr Model name
+        const word& krModelName_;
 
         //- Ref to Kr Model
         const relativePermeabilityModelBase<2>& krModel_;

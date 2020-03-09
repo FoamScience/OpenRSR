@@ -353,7 +353,7 @@ Foam::wellModelBase<KType, nPhases>::wellModelBase
     // Populate source hash table
     forAll(phaseNames, pn)
     {
-        source_.insert(phaseNames[pn], fvScalarMatrix(p_, dimless/dimTime/dimPressure));
+        source_.insert(phaseNames[pn], fvScalarMatrix(p_, dimVolume/dimTime));
     }
 
     // Start By Creating well objects

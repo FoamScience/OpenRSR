@@ -41,10 +41,15 @@ peaceman<KType, MuRhoType>::peaceman
 )
 :
     wellModelBase<KType,2>(name, wellProperties, mesh),
+    krModelName_(
+        wellProperties.found("names")
+        ? wellProperties.subDict("names").lookupOrDefault<word>("krModel", "krModel")
+        : "krModel"
+    ),
     krModel_
     (
         mesh.objectRegistry::lookupObject<relativePermeabilityModelBase<2> >
-        ("krModel")
+        (krModelName_)
     ),
     pcModel_
     (
@@ -496,29 +501,31 @@ void peaceman<KType, MuRhoType>::operator()(const word& wellName) const
         forAll(src, ci)
         {
             label cellID = well.cellIDs()[ci];
-            scalar totalCanonicalQ = 
+            scalar totalCanonicalQ =
                 well.driveAtTime(krModel_.canonicalPhase()+".rate", timeIndex);
             // P and BHP coeffs are null
             src[ci][0] = 0;
             src[ci][2] = 0;
-            // Free term is constrained constant for each phase
+            // Free term is constrained for each phase
             // Use fractional flow to express non canonical rate
-            src[ci][1] = totalCanonicalQ/calculateCellRateRatio(cellID, well, 1);
+            src[ci][1] = well.operationSign()*totalCanonicalQ
+                        / calculateCellRateRatio(cellID, well, 1)
+                        / this->mesh_.V()[cellID];
             src[ci][3] = src[ci][1]*(1-fQ[cellID])/fQ[cellID];
         }
     } else if (well.isActiveDrive(nonCanonicalPhase+".rate"))
     {
         // Case 2: non-canonical Q is constrained
-        notImplemented("nonCanonical Q constrainte not avilable")
+        notImplemented("nonCanonical rate constraint not yet available")
 
     } else if (well.isActiveDrive("totalRate"))
     {
         // Case 3: Total Q is constrained
-        notImplemented("TotalRate constrainte not avilable")
+        notImplemented("TotalRate constraint not yet available")
     } else if (well.isActiveDrive("BHP"))
     {
         // Case 4: BHP is constrained
-        notImplemented("BHP constrainte not avilable")
+        notImplemented("BHP constraint not yet available")
     }
 
     // Update well source matrix
