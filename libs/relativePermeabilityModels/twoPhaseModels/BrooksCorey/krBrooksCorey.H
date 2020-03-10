@@ -145,6 +145,12 @@ public:
             return canonicalPhase_;
         }
 
+        //- Return phase index
+        label phaseIndex(const word& phaseName) const
+        {
+            return (phaseName == canonicalPhase_ ? 0 : 1);
+        }
+
         //- Correct the relative permeabilities
         virtual void correct();
 };

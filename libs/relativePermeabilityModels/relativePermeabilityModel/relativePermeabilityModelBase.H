@@ -183,6 +183,9 @@ public:
         //- Return canonical phase name
         virtual const word canonicalPhase() const = 0;
 
+        //- Return phase index
+        virtual label phaseIndex(const word& phaseName) const = 0;
+
         //- Write Data to Ostream
         virtual bool writeData(Ostream&) const
         {

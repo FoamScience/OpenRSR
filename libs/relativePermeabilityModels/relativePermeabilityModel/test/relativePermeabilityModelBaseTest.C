@@ -84,6 +84,8 @@ public:
     virtual void correct(){}
     virtual const wordList phaseNames() const {return wordList();};
     virtual const word canonicalPhase() const {return word("");  };
+    label phaseIndex(const word& phaseName) const
+    {return 0;};
 };
 
 #include "addToRunTimeSelectionTable.H"

@@ -105,7 +105,7 @@ protected:
         word name_;
 
         //- Well configs dict
-        const dictionary& wellDict_;
+        dictionary wellDict_;
 
         //- Const-ref to mesh
         const fvMesh& mesh_;

@@ -17,4 +17,5 @@
 **/build/**
 **/_build/**
 **.tmp
+.codacy-coverage/
 allTest.sh
