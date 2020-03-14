@@ -146,7 +146,7 @@ SCENARIO("Relative Permeability Curves in Water-Oil systems")
                 dKrCalculated[ci] = dkrw.internalField()[ci];
             }
             REQUIRE_THAT(dKrCalculated, Catch::Matchers::Approx(dKrwManual).margin(1e-6));
-            forAll(dkrn, ci)
+            forAll(dKrCalculated, ci)
             {
                 dKrCalculated[ci] = dkrn.internalField()[ci];
             }

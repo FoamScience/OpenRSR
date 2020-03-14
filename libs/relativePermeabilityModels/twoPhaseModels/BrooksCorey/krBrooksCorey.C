@@ -207,20 +207,39 @@ void Foam::relativePermeabilityModels::krBrooksCorey::correct()
 {
     forAll(mesh_.C(), celli)
     {
-        // Calculate Krs
-        dimensionedScalar SneUpper = 1-S_.internalField()[celli]-Snr_.internalField()[celli];
-        dimensionedScalar SweLower = 1-Swi_.internalField()[celli]-Snr_.internalField()[celli];
-        dimensionedScalar SweUpper = S_.internalField()[celli]-Swi_.internalField()[celli];
-        kr_.internalField()[celli][0] = 
-            krwMax_.internalField()[celli] * pow(SweUpper/SweLower, mw_.internalField()[celli]).value();
-        kr_.internalField()[celli][1] = 
-            krnMax_.internalField()[celli] * pow(SneUpper/SweLower, mn_.internalField()[celli]).value();
+        if( S_[celli] < Swi_[celli] )
+        {
+            kr_[celli][0] = VSMALL;
+            kr_[celli][1] = krnMax_[celli];
+            dkrdS_[celli][0] = 0;
+            dkrdS_[celli][1] = 0;
+        } else if( S_[celli] > (1-Snr_[celli]) ) {
+            kr_[celli][0] = krwMax_[celli];
+            kr_[celli][1] = VSMALL;
+            dkrdS_[celli][0] = 0;
+            dkrdS_[celli][1] = 0;
+        } else {
+            // Calculate Krs
+            dimensionedScalar SneUpper = 1-S_.internalField()[celli]-Snr_.internalField()[celli];
+            dimensionedScalar SweLower = 1-Swi_.internalField()[celli]-Snr_.internalField()[celli];
+            dimensionedScalar SweUpper = S_.internalField()[celli]-Swi_.internalField()[celli];
+            kr_.internalField()[celli][0] = 
+                krwMax_.internalField()[celli] * pow(SweUpper/SweLower, mw_.internalField()[celli]).value();
+            kr_.internalField()[celli][1] = 
+                krnMax_.internalField()[celli] * pow(SneUpper/SweLower, mn_.internalField()[celli]).value();
 
-        // Calculate Kr Derivatives irt S_
-        dkrdS_.internalField()[celli][0] = 
-            mw_[celli]*krwMax_.internalField()[celli] * pow(SweUpper/SweLower, mw_[celli]-1).value()/SweLower.value();
-        dkrdS_.internalField()[celli][1] = 
-            -mn_[celli]*krnMax_.internalField()[celli] * pow(SneUpper/SweLower, mn_[celli]-1).value()/SweLower.value();
+            // Calculate Kr Derivatives irt S_
+            if (SneUpper.value() != 0 && SweUpper.value() != 0)
+            {
+                dkrdS_.internalField()[celli][0] = mw_[celli]*kr_.internalField()[celli][0]/SweUpper.value();
+                dkrdS_.internalField()[celli][1] = -mn_[celli]*kr_.internalField()[celli][1]/SneUpper.value();
+            } else {
+                dkrdS_.internalField()[celli][0] =
+                    mw_[celli]*krwMax_.internalField()[celli] * pow(SweUpper/SweLower, mw_[celli]-1).value()/SweLower.value();
+                dkrdS_.internalField()[celli][1] =
+                    -mn_[celli]*krnMax_.internalField()[celli] * pow(SneUpper/SweLower, mn_[celli]-1).value()/SweLower.value();
+            }
+        }
     }
 
     // It's unbelievable how important these lines are !!!!

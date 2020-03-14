@@ -60,7 +60,7 @@ relativePermeabilityModelBase<nPhases>::relativePermeabilityModelBase
             mesh.time().timeName(),
             mesh,
             IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh,
         dimensionedKrVector<nPhases>( "kr", dimless, krVector<nPhases>::zero),
@@ -74,7 +74,7 @@ relativePermeabilityModelBase<nPhases>::relativePermeabilityModelBase
             mesh.time().timeName(),
             mesh,
             IOobject::READ_IF_PRESENT,
-            IOobject::NO_WRITE
+            IOobject::AUTO_WRITE
         ),
         mesh,
         dimensionedKrVector<nPhases>( "dkrdS", dimless, krVector<nPhases>::zero),

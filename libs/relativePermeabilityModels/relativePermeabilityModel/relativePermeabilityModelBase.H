@@ -139,7 +139,7 @@ public:
         }
 
         //- Return relative permeability component
-        tmp<volScalarField> kr(int phaseIndex) const
+        volScalarField kr(int phaseIndex) const
         {
             return kr_.component(phaseIndex);
         }
@@ -147,11 +147,11 @@ public:
         //- Return relative permeability of cell
         scalar kr(int phaseIndex, int cellID) const
         {
-            return kr_[phaseIndex][cellID];
+            return kr_[cellID][phaseIndex];
         }
 
         //- Return relative permeability derivative
-        tmp<volScalarField> dkrdS(int phaseIndex) const
+        volScalarField dkrdS(int phaseIndex) const
         {
             return dkrdS_.component(phaseIndex);
         }
@@ -159,7 +159,7 @@ public:
         //- Return relative permeability derivative of cell
         scalar dkrdS(int phaseIndex, int cellID) const
         {
-            return dkrdS_[phaseIndex][cellID];
+            return dkrdS_[cellID][phaseIndex];
         }
 
         //- Return Kr table as a hole (For debugging)
