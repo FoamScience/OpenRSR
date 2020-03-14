@@ -1,41 +1,42 @@
-// For convenience
-dimensionedScalar VSMALLF ("VSMALLF", dimensionSet(-1,3,1,0,0,0,0), VSMALL);
-
-// Check canonical phase consistency
-if (canPhase.name() != krModel->canonicalPhase())
-{
-    WarningIn(__PRETTY_FUNCTION__)
-        << "Relative Permeability Model has its canonical phase" 
-        << " set to " << krModel->canonicalPhase()
-        << " but the solver recognizes " << canPhase.name()
-        << " as the canonical phase."
-        << endl;
-}
-
-// Control Kr data
+// Access to relative permeability
 krModel->correct();
-volScalarField krc = krModel->kr(krModel->phaseIndex(canPhase.name()));
-volScalarField krn = krModel->kr(krModel->phaseIndex(noncanPhase.name()));
-volScalarField dkrcdS = krModel->dkrdS(krModel->phaseIndex(canPhase.name()));
-volScalarField dkrndS = krModel->dkrdS(krModel->phaseIndex(noncanPhase.name()));
+volScalarField krc
+(
+    canPhase.name()+".kr",
+    krModel->kr(krModel->phaseIndex(canPhase.name()))
+);
+volScalarField krn
+(
+    noncanPhase.name()+".kr",
+    krModel->kr(krModel->phaseIndex(noncanPhase.name()))
+);
+volScalarField dkrcdS
+(
+    canPhase.name()+".dkrdS",
+    krModel->dkrdS(krModel->phaseIndex(canPhase.name()))
+);
+volScalarField dkrndS
+(
+    noncanPhase.name()+".dkrdS",
+    krModel->dkrdS(krModel->phaseIndex(noncanPhase.name()))
+);
 
-// Interpolations to faces
-surfaceScalarField krcf ("krcf", fvc::interpolate(krc, canPhase.name()+".kr"));
-surfaceScalarField krnf ("krnf", fvc::interpolate(krn, noncanPhase.name()+".kr"));
-surfaceScalarField dkrcfdS ("dkrcfdS", fvc::interpolate(dkrcdS, canPhase.name()+".dkrdS"));
-surfaceScalarField dkrnfdS ("dkrnfdS", fvc::interpolate(dkrndS, noncanPhase.name()+".dkrdS"));
+// Interpolations to faces, profile this
+surfaceScalarField krcf ("krcf", fvc::interpolate(krc, krc.name()));
+surfaceScalarField krnf ("krnf", fvc::interpolate(krn, krn.name()));
+
+surfaceScalarField dkrcfdS ("dkrcfdS", fvc::interpolate(dkrcdS, dkrcdS.name()));
+surfaceScalarField dkrnfdS ("dkrnfdS", fvc::interpolate(dkrndS, dkrndS.name()));
 
 // Mobilities and flow fractions
-surfaceScalarField Mnf ("Mnf",Kf*krnf/mun);
-surfaceScalarField Lnf ("Lnf",rhon*Mnf);	
-surfaceScalarField Mcf ("Mcf",Kf*krcf/muc);
-surfaceScalarField Lcf ("Lcf",rhoc*Mcf);
-surfaceScalarField Mf ("Mf",Mnf+Mcf);
-surfaceScalarField Lf ("Lf",Lnf+Lcf);
-surfaceScalarField Fcf ("Fcf",Mcf/Mf);
-
-// Fractional flow
-volScalarField Fc ("Fc",(krc/muc) / ( (krn/mun) + (krc/muc) ));
+surfaceScalarField Mcf ("Mcf", Kf*krcf/muc);
+surfaceScalarField Lcf ("Lcf", rhoc*Kf*krcf/muc);
+surfaceScalarField Mnf ("Mnf", Kf*krnf/mun);
+surfaceScalarField Lnf ("Lnf", rhon*Kf*krnf/mun);
+surfaceScalarField Mf ("Mf", Mnf+Mcf);
+surfaceScalarField Lf ("Lf", Lnf+Lcf);
+surfaceScalarField Fcf ("Fcf", Mcf/Mf);
+volScalarField Fc ("Fc", (krc/muc) / ( (krn/mun) + (krc/muc) ));
 
 // Capillary flux
 pcModel->correct();
@@ -43,5 +44,5 @@ surfaceScalarField phiPc
 (
     "phiPc",
     Mcf * fvc::interpolate(pcModel->dpcdS(),"pc")
-        * fvc::snGrad(canPhase.alpha())*mesh.magSf()
+    * fvc::snGrad(canPhase.alpha())*mesh.magSf()
 );

@@ -1,4 +1,4 @@
-// Update gravitation fluxes
+// Update fluxes
 phiG = (Lf * g) & mesh.Sf();
 phicG = (Lcf*g) & mesh.Sf();
 
@@ -6,7 +6,7 @@ phicG = (Lcf*g) & mesh.Sf();
 // phiP is calculated in pEqn.H
 phi == phiP+phiG+phiPc;
 
-// Continuity errors (on global flux: phi)
+// Continuity errors
 #include "continuityErrs.H"
 
 // Overwrite BCs

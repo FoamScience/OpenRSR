@@ -1,9 +1,7 @@
-//  Create fields necessary to drive the simulation
+// This should belong to an Impes algo. class
+scalar dSmax(runTime.controlDict().lookupOrDefault<scalar>("dSmax",0.));
 
-//- Max change in canonical phase saturation through a timeStep
-scalar dSmax(runTime.controlDict().lookupOrDefault<scalar>("dSmax", 0.01));
-
-Info<< nl << "Reading field p\n" << endl;
+Info<< "Reading field p\n" << endl;
 volScalarField p
 (
     IOobject
@@ -30,35 +28,30 @@ IOdictionary transportProperties
     )
 );
 
-// Get Phase names from transportProperties
-wordList phaseNames;
-transportProperties.lookup("phases") >> phaseNames;
-if (phaseNames.size() != 2)
-{
-    FatalErrorIn("createFields.H")
-        << "Expected 2 phase names in transportProperties.phases but"
-        << phaseNames.size() << " incountered" << nl << exit(FatalError);
-}
+// Collect phase names
+wordList phaseNames(transportProperties.lookup("phases"));
 
-//- Two incompressible phase objects
-phaseModels::incompressibleFluid canPhase(phaseNames[0], transportProperties, mesh);
-phaseModels::incompressibleFluid noncanPhase(phaseNames[1], transportProperties, mesh);
 
-// Convenience references for canonical (c) and noncanonical (n) phase parameters
-volVectorField& Un = noncanPhase.U();
+// Phase objects
+incompressibleFluid canPhase(phaseNames[0], transportProperties, mesh);
+incompressibleFluid noncanPhase(phaseNames[1], transportProperties, mesh);
+
+// Convenience references
 volVectorField& Uc = canPhase.U();
-surfaceScalarField& phin = noncanPhase.phi();
 surfaceScalarField& phic = canPhase.phi();
+volVectorField& Un = noncanPhase.U();
+surfaceScalarField& phin = noncanPhase.phi();
 
-const uniformDimensionedScalarField& rhon = noncanPhase.rho();
 const uniformDimensionedScalarField& rhoc = canPhase.rho();
-const uniformDimensionedScalarField& mun = noncanPhase.mu();
 const uniformDimensionedScalarField& muc = canPhase.mu();
+const uniformDimensionedScalarField& rhon = noncanPhase.rho();
+const uniformDimensionedScalarField& mun = noncanPhase.mu();
 
 // Relative permeability model
 autoPtr<base2PhasesKrModel> krModel =
     base2PhasesKrModel::New("krModel", transportProperties, mesh);
 
+// Capillary pressure model
 autoPtr<base2PhasesPcModel> pcModel =
     base2PhasesPcModel::New("pcModel", transportProperties, mesh);
 
@@ -90,12 +83,10 @@ volScalarField K
     mesh
 );
 
-// Interpolate Absolute Permeability to mesh faces
-Info<< "Interpolating field K\n" << endl;
-surfaceScalarField Kf = fvc::interpolate(K, "K");
+// Absolute Permeability interpolation to faces
+surfaceScalarField Kf = fvc::interpolate(K,"K");
 
-// Sum of phase velocities in a cell
-// Used to handle total flux!
+Info<< "Reading field U\n" << endl;
 volVectorField U
 (
     IOobject
@@ -106,14 +97,15 @@ volVectorField U
         IOobject::NO_READ,
         IOobject::NO_WRITE
     ),
-    Uc + Un
+    Un + Uc
 );
 
-// Require flux for p field here
-// because foam-extend-4.0 won't read it from fvSchemes for some reason
+// Fix a bug with foam-extend-4.0
 mesh.schemesDict().setFluxRequired(p.name());
-Info << nl;
 
+// Hard-coded Diagonal solver for saturation
+// I don't see the point of specifying this in fvSolution
 dictionary SwSolver = dictionary();
 SwSolver.add("solver","diagonal");
 SwSolver.add("relTol",0.0);
+Info << SwSolver << endl;

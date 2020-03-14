@@ -1,10 +1,9 @@
 // Assume this is total flux
-Info<< nl;
 #include "createPhi.H"
 
-// Flux generated from pressure difference
+// Pressure flux
 surfaceScalarField phiP = phi;
 
-// Gravitational fluxes
+// Gravitational flux
 surfaceScalarField phiG("phiG", (Lf * g) & mesh.Sf());
-surfaceScalarField phicG(canPhase.name()+".phiG", (Lcf * g) & mesh.Sf());
+surfaceScalarField phicG("phiG", (Lcf * g) & mesh.Sf());

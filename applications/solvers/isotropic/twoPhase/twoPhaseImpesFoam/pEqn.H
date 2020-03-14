@@ -1,20 +1,17 @@
 {
     fvScalarMatrix pEqn
-    (
-        fvm::laplacian(-Mf, p) + fvc::div(phiG)
-        // Capillary flux
-        + fvc::div(phiPc)
-        // Wells contribution
-        + wModel->source(canPhase.name())
-        + wModel->source(noncanPhase.name())
-        //+ SrcProd -SrcInj
-        //+ ewSource + eoSource
-        //+ fvm::Sp(iwSource, p) + fvm::Sp(ioSource, p)
-    );
+        (
+            fvm::laplacian(-Mf, p) + fvc::div(phiG)
+            // Capillary flux
+            + fvc::div(phiPc)
+            // Wells contribution
+            //+ SrcProd -SrcInj
+            + wModel->source(canPhase.name())
+            + wModel->source(noncanPhase.name())
+        );
 
     pEqn.solve();
 
-    phiP = pEqn.flux();
-    //Equivqlent to: phiP = -Mf * fvc::snGrad(p) * mesh.magSf();
-
+    //phiP = pEqn.flux();
+    phiP = -Mf*fvc::snGrad(p) * mesh.magSf();
 }

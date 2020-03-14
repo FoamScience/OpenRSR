@@ -4,9 +4,9 @@
     // Inertia
     volScalarField dfc (
         "dfc",
-        (dkrcdS*krn - dkrndS*krc) 
+        (dkrcdS*krn - dkrndS*krc)
         // Should this be stored first?
-        /(muc/mun*Foam::pow(krn,2) + 2*krn*krc + mun/muc*Foam::pow(krc,2)) 
+        /(muc/mun*Foam::pow(krn,2) + 2*krn*krc + mun/muc*Foam::pow(krc,2))
     );
 
     dimensionedScalar smallRate("smallRate",dimVolume/dimTime, SMALL);

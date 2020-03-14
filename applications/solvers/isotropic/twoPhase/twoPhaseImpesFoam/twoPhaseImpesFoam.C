@@ -25,8 +25,8 @@ Application
     impesFoam
 
 Description
-    Transient solver for incompressible two-phase flow (following Darcy's law) 
-    in porous media using the IMPES method (IMplicit Pressure Explicit Saturation).
+    Transient solver for incompressible two-phase flow (Darcy's law) in porous media
+    using the IMPES method (IMplicit Pressure Explicit Saturation).
     Permeability is isotropic (K == volScalarField)
 
 Developers
@@ -45,7 +45,9 @@ Developers
 #include "wellBasesFwd.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
 using namespace Foam;
+using namespace phaseModels;
 
 int main(int argc, char *argv[])
 {
@@ -68,25 +70,23 @@ int main(int argc, char *argv[])
 
     Info<< "\nStarting time loop\n" << endl;
 
-    while (runTime.loop())
+    while (runTime.run())
     {
 
         Info<< "Time = " << runTime.timeName() << nl << endl;
+        runTime++;
 
         // Solve saturation equation explicitly
-        #include "canPhaseEqn.H"
-        //scalar minSw = gMin(phasew.alpha());
-        //if (minSw < 0)
-        //{
-        //    phasew.alpha() -= minSw;
-        //}
-        //phasew.alpha().correctBoundaryConditions();
+        #include "alphaEqn.H"
+        ////scalar minSw = gMin(phasew.alpha());
+        ////if (minSw < 0)
+        ////{
+        ////    phasew.alpha() -= minSw;
+        ////}
+        ////phasew.alpha().correctBoundaryConditions();
         #include "updateSaturationFields.H"
-//
-//        Info << wModel->source("water").diag() << nl << nl
-//            << wModel->source("water").source() << endl;
-//
-        // Solve pressure equation (implicit)
+
+        //// Solve pressure equation (implicit)
         #include "pEqn.H"
         #include "updatePressureFields.H"
 
