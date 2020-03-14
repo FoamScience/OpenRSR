@@ -134,9 +134,12 @@ scalarList peaceman<Iso, Incompressible>::calculateFractionalFlow
     forAll(fracFlow, ci)
     {
         label cellID = well.cellIDs()[ci];
-        fracFlow[ci] = 1.0
-            /(1.0 + krModel_.kr(1, cellID)*canonicalMu_.value()
-                /(krModel_.kr(0, cellID)*nonCanonicalMu_.value()+SMALL)
+        Info << "..... cell " << cellID << " .... kr water: " << krModel_.kr(0, cellID) << nl
+            << "..... cell " << cellID << " .... kr oil: " << krModel_.kr(1, cellID) << nl;
+        fracFlow[ci] = krModel_.kr(0, cellID)/canonicalMu_.value()
+            /(
+                (krModel_.kr(0, cellID)/canonicalMu_.value())
+                + (krModel_.kr(1, cellID)/nonCanonicalMu_.value())
             );
     }
     return fracFlow;
@@ -511,7 +514,10 @@ void peaceman<KType, MuRhoType>::operator()(const word& wellName) const
             src[ci][1] = well.operationSign()*totalCanonicalQ
                         / calculateCellRateRatio(cellID, well, 1)
                         / this->mesh_.V()[cellID];
-            src[ci][3] = src[ci][1]*(1-fQ[cellID])/fQ[cellID];
+            // Don't ever forget this stupid bug
+            // Three days, that's what it took to figure it out
+            //src[ci][3] = src[ci][1]*(1-fQ[ci])/fQ[ci];
+            src[ci][3] = 0;
         }
     } else if (well.isActiveDrive(nonCanonicalPhase+".rate"))
     {
