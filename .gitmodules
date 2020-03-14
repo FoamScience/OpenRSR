@@ -1,3 +1,4 @@
 [submodule "OpenRSR.tutorials"]
 	path = OpenRSR.tutorials
 	url = https://github.com/FoamScience/OpenRSR.tutorials
+	branch = dev
