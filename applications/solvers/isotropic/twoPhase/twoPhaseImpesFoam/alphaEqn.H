@@ -20,26 +20,6 @@
     //}
 
 
-    volScalarField wellSource
-    (
-        IOobject
-        (
-            "wellSource",
-            runTime.timeName(),
-            mesh,
-            IOobject::NO_READ,
-            IOobject::NO_WRITE
-        ),
-        mesh,
-        dimensionedScalar("zero", dimless/dimTime, 0),
-        "zeroGradient"
-    );
-
-    forAll(wellSource, ci)
-    {
-        wellSource[ci] = wModel->explicitSource(canPhase.name())[ci];
-    }
-
     fvScalarMatrix alphaEqn
     (
         porosity*fvm::ddt(canPhase.alpha())

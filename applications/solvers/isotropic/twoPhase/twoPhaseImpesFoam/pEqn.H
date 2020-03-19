@@ -5,13 +5,12 @@
             // Capillary flux
             + fvc::div(phiPc)
             // Wells contribution
-            //+ SrcProd -SrcInj
             + wModel->source(canPhase.name())
             + wModel->source(noncanPhase.name())
         );
 
     pEqn.solve();
 
-    //phiP = pEqn.flux();
-    phiP = -Mf*fvc::snGrad(p) * mesh.magSf();
+    phiP = pEqn.flux();
+    //phiP = -Mf*fvc::snGrad(p) * mesh.magSf();
 }

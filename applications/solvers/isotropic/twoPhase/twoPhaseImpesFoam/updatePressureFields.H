@@ -4,7 +4,7 @@ phicG = (Lcf*g) & mesh.Sf();
 
 // Reconstruct total flux
 // phiP is calculated in pEqn.H
-phi == phiP+phiG+phiPc;
+phi = phiP+phiG+phiPc;
 
 // Continuity errors
 #include "continuityErrs.H"
