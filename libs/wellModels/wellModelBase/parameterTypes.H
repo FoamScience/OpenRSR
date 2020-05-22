@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2014 held by original authors 
+    \\  /    A nd           | Copyright (C) 2020 held by original authors 
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -24,10 +24,6 @@ License
 Description
     Template types for wells
 
-Authors:
-    Tomislav Maric tomislav@sourceflux.de
-    Jens Hoepken jens@sourceflux.de
-
 \*---------------------------------------------------------------------------*/
 
 #ifndef parameterTypes_H
@@ -44,14 +40,13 @@ namespace Foam
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
         // Type definitions for the possible parameters for the 
-        // ExampleClassTemplateBase: built in types used here, but otherwise, 
-        // this header must include declarations of all possible template 
-        // arguments to be used together with the ExampleClassTemplateBase.
-        typedef volScalarField    Iso;
-        typedef volTensorField    Aniso;
-
-        typedef volScalarField                  Compressible;
-        typedef uniformDimensionedScalarField   Incompressible;
+		// wellModelBase class
+		// Options for KType
+        typedef volScalarField                   Iso;
+        typedef volTensorField                   Aniso;
+		// Options for PhaseType
+		typedef phaseModels::IncompressibleFluid Incompressible;
+		typedef phaseModels::blackOil            Compressible;
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

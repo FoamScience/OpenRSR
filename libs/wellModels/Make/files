@@ -1,7 +1,3 @@
-well/wellBases.C
-
-twoPhaseWells/verticalIsoWell/verticalIsoWell.C
-
-twoPhaseWellModels/peaceman/peacemanModels.C
+wellModelBase/wellModelBase.C
 
 LIB = $(FOAM_USER_LIBBIN)/libwellModels
