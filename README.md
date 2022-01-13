@@ -1,3 +1,5 @@
+> Please take a look at [FoamScience/OpenRSR-OF7](https://FoamScience/OpenRSR-OF7/tree/develop) for an incomplete rewrite for this thing (with OpenFOAM-7)
+
 > This work is not affiliated with OpenCFD, the owner of the OpenFOAM trademark, in any
 > way.
 > If you need old versions of the code, they are now available in 
